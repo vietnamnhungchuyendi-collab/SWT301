@@ -1,6 +1,5 @@
 # Node modules
 node_modules/
-package-lock.json
 
 # Environment variables (QUAN TRỌNG: không push lên Git)
 .env
@@ -20,3 +19,7 @@ ngrok.yml
 
 # Uploaded files
 backend/uploads/
+
+# Build output
+dist/
+build/
