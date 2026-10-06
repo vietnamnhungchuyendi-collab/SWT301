@@ -84,3 +84,5 @@ HTTP status/body; rejected login does not issue JWT; expected password check/que
 Tổng: 45 unit + 3 integration = 48; 192 assertions = 4/test. Mỗi test reset dependencies; fixed clock/RNG ở unit giúp lặp lại. Integration không dùng fake timers vì HTTP cần timer thật. Hai case V05/V06 dùng cùng kết quả SQL rỗng để phản ánh predicate is_used=0 của controller; kiểm chứng khác nhau ở SQL thật nằm ngoài phạm vi.
 
 Không thêm nghiệp vụ cho email syntax hoặc role non-string khi source chưa có contract. SQL/email failure handled bằng HTTP 500; không diễn giải đây là exception ném ra caller. Login ADMIN plaintext fallback được ghi nhận đúng hành vi nguồn, không được xem là khuyến nghị thiết kế. Các hàm forgot/reset/resend/google ngoài ba hàm được chọn không nằm trong coverage denominator.
+
+Report5 giữ cột hẹp và validation O gốc: mỗi điều kiện ghi input/state kèm mã HTTP sau dấu hai chấm; giải mã1=200,2=201,3=400,4=401,5=403,6=404,7=500 nằm ở C5. Confirmation O kiểm HTTP đúng như input và payload/side effect như test code. Ngày7/10 tại ma trận là07/10/2026 theo Cover. Không đổi font/width/merge để nhét số3chữ số vào ô vốn thiết kế cho O.

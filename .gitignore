@@ -1,7 +1,7 @@
 # Node modules
 node_modules/
 
-# Environment variables (QUAN TRá»ŒNG: khÃ´ng push lÃªn Git)
+# Environment variables: never commit real credentials
 .env
 .env.local
 .env.production

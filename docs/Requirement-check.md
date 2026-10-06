@@ -10,7 +10,7 @@ Nguồn: đề Unit testing với AI ngày27/09; đề CI Maven ngày28/09; mẫ
 | AI03 | Test code, assertions, setup/teardown/config; Prompt3 | tests/unit/auth.test.js; beforeEach/afterEach; config | Đã làm |
 | AI04 | Chạy, debug lỗi thật, screenshot và coverage; Prompt4 | evidence/results.json, Test-results.png, Coverage.png; HTML coverage | Đã làm local |
 | AI05 | Mock dependencies, tối ưu, integration, refactor; Prompt5 | mocks/dependencies.js; integration/auth-flow; authCore re-export; cold/warm timings | Đã làm |
-| AI06 | README, metrics, short demo, Git commit; Prompt6 | tests/README.md, Metrics.md, Demo.md; commit xem GitHub-status.md | Tài liệu xong; Git theo status thực tế |
+| AI06 | README, metrics, short demo, Git commit; Prompt6 | tests/README.md, Metrics.md, Demo.md; commit xem GitHub-status.md | Đã commit/push; xem GitHub-status.md |
 | AI07 | File structure tests/unit/mocks, coverage/index.html, README | Đúng tại backend/tests; thêm integration folder vì bắt buộc integration | Đã làm |
 | AI08 | Coverage≥80% |100%scoped module; gate80%all4metrics | Đạt |
 | AI09 | Ít nhất15cases |48FJMS cases, không cộng Java vào ngưỡng | Đạt |
@@ -18,12 +18,12 @@ Nguồn: đề Unit testing với AI ngày27/09; đề CI Maven ngày28/09; mẫ
 | AI11 | Trung bình3–5assertions/test |192/48=4 từ numPassingAsserts JSON | Đạt |
 | AI12 | Chất lượng40%,AIprompt30%,Implementation20%,Documentation10% | Plan/mocks/oracles; AI-prompts.md ghi prompt/output/refinement; runtime evidence; README/demo | Có đủ nhóm tài liệu; không tự chấm điểm thay giảng viên |
 | CI01 | Exercise1 hoàn thiện MathUtil Lab2 | labs/math-util; factorial source,13tests, build JAR | Đã làm local |
-| CI02 | GitHub +.gitignore | .gitignore Node/Maven/NetBeans; branch/commit/push trong GitHub-status.md | Theo status thực tế |
-| CI03 | Java Maven Actions push/PR main; Java17; package/artifact | .github/workflows/maven.yml; clean verify gồm package; staging/upload JAR | Cấu hình đủ; run theo status |
+| CI02 | GitHub +.gitignore | .gitignore Node/Maven/NetBeans; branch/commit/push trong GitHub-status.md | Đã commit và push |
+| CI03 | Java Maven Actions push/PR main; Java17; package/artifact | .github/workflows/maven.yml; clean verify gồm package; staging/upload JAR | GitHub Actions SUCCESS |
 | CI04 | README workflow badge |3badges repository thật, branch bài làm | Đã làm; badge có run sau push |
-| CI05 | Exercise2 CI Sales Management | labs/sales-management,42tests; sales-ci.yml | Đã làm local; run theo status |
+| CI05 | Exercise2 CI Sales Management | labs/sales-management,42tests; sales-ci.yml | Local PASS; GitHub Actions SUCCESS |
 | CI06 | Exercise3 framework thực dùng dự án nhóm SWP391 | Jest được cấu hình và chạy trên FJMS trong repository người dùng cung cấp | Dự án FJMS thật; nhóm cần xác nhận đây là SWP391 |
-| CI07 |2–3functions chính +unit tests +CI nhóm | register/verifyEmail/login,45unit; fjms-ci.yml | Code/test/config đủ; run theo status |
+| CI07 |2–3functions chính +unit tests +CI nhóm | register/verifyEmail/login,45unit; fjms-ci.yml | Local PASS; GitHub Actions SUCCESS |
 | CI08 | Thuyết trình framework +code demo | Presentation.html8slides, Demo.md; source dùng để demo | Tài liệu hoàn thành; nhóm tự trình bày tại lớp |
 | CI09 | UnitTest documentation đúng Report5 | Report5_UnitTest.xlsx,8tabs, Cover/Functions/Statistics/3function sheets | Giữ form;8tabs,styles,merges,dimensions,statistical formulas preserved; 2 document code formulas populated |
 
