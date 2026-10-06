@@ -1,4 +1,21 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/nXoHondQ)
+
+## SWT301 Slot 7 Testing and CI
+
+[![MathUtil CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/maven.yml/badge.svg?branch=codex%2Fslot7-testing-ci)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/maven.yml)
+[![Sales Management CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/sales-ci.yml/badge.svg?branch=codex%2Fslot7-testing-ci)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/sales-ci.yml)
+[![FJMS Authentication CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/fjms-ci.yml/badge.svg?branch=codex%2Fslot7-testing-ci)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/fjms-ci.yml)
+
+- [Testing README](backend/tests/README.md), [Test plan](docs/Test-plan.md), [AI prompts](docs/AI-prompts.md), [Metrics](docs/Metrics.md)
+- [Report5 Unit Test](docs/Report5_UnitTest.xlsx), [presentation](docs/Presentation.html), [demo](docs/Demo.md)
+- [Requirement comparison](docs/Requirement-check.md), [GitHub execution status](docs/GitHub-status.md)
+
+Node.js22+: `cd backend`, `npm ci`, `npm run test:ci`. Local results:48/48 FJMS cases (45unit+3integration),4assertions/test, scoped coverage100%. Java17+ and Maven: `mvn -B clean verify --file labs/math-util/pom.xml`; same for labs/sales-management/pom.xml. MathUtil13/13, Sales42/42. Java packages generate JAR; coverage reports at target/site/jacoco/index.html.
+
+CI triggers on push to main/develop/codex/**, PR targeting main/develop, or manual dispatch. Maven workflows build+test+package and upload JAR/reports; FJMS uses lockfile npm ci and enforces80% coverage. Change badge branch to main after merge. Use the GitHub status document for actual run results.
+
+Group framework/demo/report uses the actual FJMS repository provided by the user. The assignment calls this SWP391; confirm with the group that this is its SWP391 project. No names or classroom presentation attendance were invented.
+
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c483a6345c4f15d667ab976d596c.svg)](https://classroom.github.com/a/nXoHondQ)
 
 # Freelancer Job Matching System (FJMS)
 
