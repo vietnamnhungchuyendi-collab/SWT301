@@ -1,0 +1,13 @@
+
+> fjms-backend@1.0.0 test:ci
+> jest --runInBand --coverage --json --outputFile=tests/results.json --cacheDirectory=.jest-cache
+
+PASS tests/integration/auth-flow.test.js
+PASS tests/unit/auth.test.js
+
+Test Suites: 2 passed, 2 total
+Tests:       48 passed, 48 total
+Snapshots:   0 total
+Time:        1.439 s, estimated 2 s
+Ran all test suites.
+Test results written to: tests\results.json
