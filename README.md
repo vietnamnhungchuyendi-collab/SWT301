@@ -6,10 +6,10 @@
 [![FJMS Authentication CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/fjms-ci.yml/badge.svg?branch=codex%2Fslot7-testing-ci)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/fjms-ci.yml)
 
 - [Testing README](backend/tests/README.md), [Test plan](docs/Test-plan.md), [AI prompts](docs/AI-prompts.md), [Metrics](docs/Metrics.md)
-- [Report5 Unit Test](docs/Report5_UnitTest.xlsx), [presentation](docs/Presentation.html), [demo](docs/Demo.md)
+- [Report5 Unit Test](docs/Report5_UnitTest.xlsx), [Testing Documentation](docs/Report5_Test%20Documentation.docx), [Other Test Cases](docs/Report5_Test%20Report.xlsx), [Vietnamese explanation](docs/Giai_thich_Report5.docx), [presentation](docs/Presentation.html), [demo](docs/Demo.md)
 - [Requirement comparison](docs/Requirement-check.md), [GitHub execution status](docs/GitHub-status.md)
 
-Node.js22+: `cd backend`, `npm ci`, `npm run test:ci`. Local results:48/48 FJMS cases (45unit+3integration),4assertions/test, scoped coverage100%. Java17+ and Maven: `mvn -B clean verify --file labs/math-util/pom.xml`; same for labs/sales-management/pom.xml. MathUtil13/13, Sales42/42. Java packages generate JAR; coverage reports at target/site/jacoco/index.html.
+Node.js22+: `cd backend`, `npm ci`, `npm run test:ci`. Local results:48/48 FJMS cases (45unit+3integration),4assertions/test, scoped coverage100% for register/resetPassword/login (authSelectedCore.js + passwordRecovery.js). Five ST/AT cases remain Pending. Java17+ and Maven: `mvn -B clean verify --file labs/math-util/pom.xml`; same for labs/sales-management/pom.xml. MathUtil13/13, Sales42/42. Java packages generate JAR; coverage reports at target/site/jacoco/index.html.
 
 CI triggers on push to main/develop/codex/**, PR targeting main/develop, or manual dispatch. Maven workflows build+test+package and upload JAR/reports; FJMS uses lockfile npm ci and enforces80% coverage. Change badge branch to main after merge. Use the GitHub status document for actual run results.
 

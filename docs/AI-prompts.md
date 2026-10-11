@@ -10,17 +10,17 @@ Kết quả áp dụng: backend/package.json, babel.config.cjs, jest.config.cjs,
 ## Prompt 1 Analyze
 Đọc backend/controllers/authController.js, routes/authRoutes.js, config/db.js và utils/emailService.js. Chọn một core feature và 2–3 functions chính. Mô tả input/output/dependency/branch, giữ business rules gốc. Phân biệt chính sách password FJMS và bài Java trước.
 
-Kết quả: docs/Feature-analysis.md. Authentication với register/verifyEmail/login. Có nhánh phone optional, FREELANCER profile, OTP equality boundary, ADMIN fallback và SQL errors cần kiểm thử.
+Kết quả: docs/Feature-analysis.md. Authentication với register/resetPassword/login. Có nhánh phone optional, FREELANCER profile, OTP equality boundary, ADMIN fallback và SQL errors cần kiểm thử.
 
 ## Prompt 2 Design
 Thiết kế happy path, edge case, error case cho ba functions. Nêu base fixture, từng input override, expected status/body/side effect. Ít nhất 15 case; mỗi test 3–5 assertions có ý nghĩa; bao phủ unit và integration. Review các nhánh dễ thiếu.
 
-Kết quả: docs/Test-plan.md và Report5_UnitTest.xlsx. Review bổ sung register SQL failure R10, OTP expiry now-1/now/now+1, query update failures V13/V14, JWT failure L14, OTP persistence failure L15. 45 unit +3 integration, 4 assertions mỗi test. Không thêm regex email hoặc constraint username không có trong FJMS.
+Kết quả: docs/Test-plan.md và Report5_UnitTest.xlsx. Review bổ sung register SQL failure R10, OTP expiry now-1/now/now+1, query update failures P13/P14, JWT failure L14, OTP persistence failure L15. 45 unit +3 integration, 4 assertions mỗi test. Không thêm regex email hoặc constraint username không có trong FJMS.
 
 ## Prompt 3 Generate
 Sinh Jest tests từ plan; dùng beforeEach/afterEach, data-driven cases, chained SQL request mock, predictable clock/RNG, spy console, setup/teardown đúng. Integration chạy real Express HTTP +bcrypt +JWT, adapter SQL/email giả. Refactor test boundary nếu cần mà giữ production behavior.
 
-Kết quả thực thi: backend/tests/unit/auth.test.js, unit/mocks/dependencies.js, integration/auth-flow.test.js. Tách nguyên ba hàm thành authCore.js; re-export để routes không đổi. Assertions kiểm HTTP, payload, bound SQL parameters, không tạo token/write khi lỗi, persistence và JWT signature.
+Kết quả thực thi: backend/tests/unit/auth.test.js, unit/reset-password.test.js, unit/mocks/dependencies.js, integration/auth-flow.test.js. Tách nguyên register/login vào authSelectedCore.js và resetPassword vào passwordRecovery.js; verifyEmail giữ trong authVerification.js và public re-exports để routes không đổi. Assertions kiểm HTTP, payload, bound SQL parameters, không tạo token/write khi lỗi, persistence và JWT signature.
 
 ## Prompt 4 Run and debug
 Chạy suite và coverage; đọc lỗi thật, xác định lỗi môi trường hay business. Sửa đúng nguyên nhân, chạy lại và lưu bằng chứng. Không tạo ảnh hoặc kết quả PASS giả.
@@ -39,3 +39,8 @@ Kết quả: backend/tests/README.md, docs/Metrics.md, Demo.md, Presentation.htm
 
 ## Cách tái lập và đánh giá prompt
 Đưa source và hợp đồng đầu vào như Prompt 1; chạy Prompt 2 trước khi sinh test; review branch thiếu như trên; sinh theo Prompt 3 rồi chạy thật. Nếu đổi source, phải cập nhật oracle/plan trước; không chỉ sửa expected value để test qua. Prompt 0–6 có input, output file và review/refinement; bằng chứng có thể kiểm qua source, test và JSON runtime.
+
+## Prompt 7 — Thay chức năng theo lựa chọn người dùng
+Người dùng chọn thay xác minh email bằng luồng quên/đặt lại mật khẩu để giữ ba hàm chính. Sinh P01–P15, thay integration I02/I03, cập nhật Word/Excel/hyperlink/preconditions và đo lại coverage. forgotPassword tạo mã trong integration, không thêm unit function thứ tư. Kết quả hiện tại: 48 PASS/3 suites, 192 assertions, lines97/97/statements98/98/branches57/57/functions4/4, elapsed1.577s. Các cold/warm và verification metrics kể ở Prompt0–6 là lịch sử trước thay đổi, không số liệu recovery mới.
+
+Review: phát hiện rủi ro thiếu transaction giữa password write và token-used update; mô tả giới hạn P14/SQL fake. PNG trong evidence là report previews của số liệu thật; JSON/log là bằng chứng thực thi. Thân handler không đổi, không thêm coverage ignore. Description giờ có internal hyperlink thật; tăng row height/wrap để đủ nội dung, giữ form.

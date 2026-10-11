@@ -5,7 +5,7 @@ jest.mock('../../config/db.js', () => {
 jest.mock('../../utils/emailService.js', () => ({sendOTPEmail:jest.fn().mockResolvedValue({simulated:true})}));
 jest.mock('bcryptjs', () => ({genSaltSync:jest.fn(()=> 'salt'),hashSync:jest.fn(()=> 'hashed'),compareSync:jest.fn(()=> true)}));
 jest.mock('jsonwebtoken', () => ({sign:jest.fn(()=> 'jwt-token')}));
-import {register, verifyEmail, login} from '../../controllers/authCore.js';
+import {register, login} from '../../controllers/authCore.js';
 import {mockQuery, mockQueries, resetDb, response} from './mocks/dependencies.js';
 import {sendOTPEmail} from '../../utils/emailService.js';
 import bcrypt from 'bcryptjs';
@@ -64,50 +64,6 @@ describe('register',()=>{
   mockQuery.mockRejectedValueOnce(new Error('offline'));const res=response();await register({body},res);
   expect(res.status).toHaveBeenCalledWith(500);expect(res.json.mock.calls[0][0].message).toContain('lỗi hệ thống');
   expect(sendOTPEmail).not.toHaveBeenCalled();expect(bcrypt.hashSync).not.toHaveBeenCalled();
- });
-});
-
-describe('verifyEmail',()=>{
- test.each([['V01',{email:'',code:'550000'}],['V02',{email:body.email,code:''}]])('%s missing input',async(id,input)=>{
-  const res=response();await verifyEmail({body:input},res);
-  expect(res.status).toHaveBeenCalledWith(400);expect(res.json.mock.calls[0][0].message).toContain('đầy đủ');
-  expect(mockQueries).toHaveLength(0);expect(sendOTPEmail).not.toHaveBeenCalled();
- });
- test('V03 unknown account',async()=>{
-  const res=response();await verifyEmail({body:{email:body.email,code:'550000'}},res);
-  expect(res.status).toHaveBeenCalledWith(404);expect(res.json.mock.calls[0][0].message).toContain('Không tìm thấy');
-  expect(mockQueries).toHaveLength(1);expect(mockQueries[0].inputs.email).toBe(body.email);
- });
- test('V04 already verified',async()=>{
-  mockQuery.mockResolvedValueOnce({recordset:[user]});const res=response();await verifyEmail({body:{email:body.email,code:'550000'}},res);
-  expect(res.status).toHaveBeenCalledWith(200);expect(res.json.mock.calls[0][0].success).toBe(true);
-  expect(res.json.mock.calls[0][0].message).toContain('trước đó');expect(mockQueries).toHaveLength(1);
- });
- test.each([['V05','wrong'],['V06','used']])('%s %s OTP',async(id,code)=>{
-  mockQuery.mockResolvedValueOnce({recordset:[{...user,is_email_verified:false}]}).mockResolvedValueOnce({recordset:[]});
-  const res=response();await verifyEmail({body:{email:body.email,code}},res);
-  expect(res.status).toHaveBeenCalledWith(400);expect(res.json.mock.calls[0][0].message).toContain('không hợp lệ');
-  expect(mockQueries).toHaveLength(2);expect(mockQueries[1].inputs.code).toBe(code);
- });
- test.each([['V07',-1,400],['V08',0,200],['V09',1,200],['V10',600000,200]])('%s expiry offset %s',async(id,offset,status)=>{
-  mockQuery.mockResolvedValueOnce({recordset:[{...user,is_email_verified:false}]}).mockResolvedValueOnce({recordset:[{verification_id:9,expired_at:new Date(Date.now()+offset)}]});
-  const res=response();await verifyEmail({body:{email:body.email,code:'550000'}},res);
-  expect(res.status).toHaveBeenCalledWith(status);expect(res.json.mock.calls[0][0].message).toEqual(expect.any(String));
-  expect(mockQueries).toHaveLength(status===200?4:2);expect(mockQueries[1].inputs.userId).toBe(7);
- });
- test.each([['V11',1],['V12',2],['V13',3],['V14',4]])('%s query %s failure',async(id,fail)=>{
-  let n=0;mockQuery.mockImplementation(async()=>{
-   if(++n===fail)throw new Error('offline');
-   return {recordset:n===1?[{...user,is_email_verified:false}]:n===2?[{verification_id:9,expired_at:new Date(Date.now()+600000)}]:[]};
-  });const res=response();await verifyEmail({body:{email:body.email,code:'550000'}},res);
-  expect(res.status).toHaveBeenCalledWith(500);expect(res.json.mock.calls[0][0].message).toContain('lỗi');
-  expect(mockQueries).toHaveLength(fail);expect(sendOTPEmail).not.toHaveBeenCalled();
- });
- test('V15 successful update parameters',async()=>{
-  mockQuery.mockResolvedValueOnce({recordset:[{...user,is_email_verified:false}]}).mockResolvedValueOnce({recordset:[{verification_id:9,expired_at:new Date(Date.now()+600000)}]});
-  const res=response();await verifyEmail({body:{email:body.email,code:'550000'}},res);
-  expect(res.json.mock.calls[0][0].success).toBe(true);expect(mockQueries[2].inputs.verificationId).toBe(9);
-  expect(mockQueries[3].inputs.userId).toBe(7);expect(mockQueries[2].text).toContain('is_used = 1');
  });
 });
 

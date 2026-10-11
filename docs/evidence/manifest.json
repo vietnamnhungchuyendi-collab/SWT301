@@ -1,0 +1,32 @@
+{
+  "date": "12/10/2026",
+  "started": "2026-10-12T02:11:22.715000+07:00",
+  "versions": {
+    "jest": "29.7.0",
+    "supertest": "7.1.1",
+    "babel-jest": "29.7.0",
+    "@babel/core": "7.24.7",
+    "express": "4.22.3",
+    "bcryptjs": "2.4.3",
+    "jsonwebtoken": "9.0.3",
+    "mssql": "10.0.5",
+    "nodemailer": "8.0.11"
+  },
+  "passed": 48,
+  "unit": 45,
+  "integration": 3,
+  "assertions": 192,
+  "run_seconds": 1.577,
+  "os": "Windows-11-10.0.26300-SP0",
+  "source_sha256": "a68e6ad63a88727bd6d9b301e58c3d7ae5ba53d21ab3485bdc4293cf3fe84bf6",
+  "suites": 3,
+  "selected_functions": [
+    "register",
+    "resetPassword",
+    "login"
+  ],
+  "coverage_targets": [
+    "authSelectedCore.js",
+    "passwordRecovery.js"
+  ]
+}
