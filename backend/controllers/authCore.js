@@ -172,7 +172,7 @@ export const verifyEmail = async (req, res) => {
     const { verification_id, expired_at } = otpResult.recordset[0];
 
     // Check expiration
-    if (new Date() > new Date(expired_at)) {
+    if (new Date() >= new Date(expired_at)) {
       return res.status(400).json({ message: 'Mã xác thực đã hết hạn.' });
     }
 
