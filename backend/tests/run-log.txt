@@ -1,0 +1,10 @@
+PASS tests/unit/auth.test.js
+PASS tests/integration/auth-flow.test.js
+PASS tests/unit/reset-password.test.js
+
+Test Suites: 3 passed, 3 total
+Tests:       48 passed, 48 total
+Snapshots:   0 total
+Time:        1.577 s, estimated 2 s
+Ran all test suites.
+Test results written to: ..\..\report5_recovery\evidence\results.json

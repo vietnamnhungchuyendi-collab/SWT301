@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Product.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sales-management</a> &gt; <a href="index.source.html" class="el_package">vn.edu.fpt</a> &gt; <span class="el_source">Product.java</span></div><h1>Product.java</h1><pre class="source lang-java linenums">package vn.edu.fpt;
+public class Product {
+    private final String productId;
+    private final String productName;
+    private final double price;
+    private final int quantity;
+<span class="fc" id="L7">    public Product(String productId, String productName, double price, int quantity) {</span>
+<span class="fc bfc" id="L8" title="All 4 branches covered.">        if (productId == null || productId.isEmpty()) throw new IllegalArgumentException(&quot;Product ID is required&quot;);</span>
+<span class="fc bfc" id="L9" title="All 4 branches covered.">        if (productName == null || productName.isEmpty()) throw new IllegalArgumentException(&quot;Product name is required&quot;);</span>
+<span class="fc bfc" id="L10" title="All 2 branches covered.">        if (price &lt;= 0) throw new IllegalArgumentException(&quot;Price must be greater than 0&quot;);</span>
+<span class="fc bfc" id="L11" title="All 2 branches covered.">        if (quantity &lt;= 0) throw new IllegalArgumentException(&quot;Quantity must be greater than 0&quot;);</span>
+<span class="fc" id="L12">        this.productId = productId; this.productName = productName; this.price = price; this.quantity = quantity;</span>
+<span class="fc" id="L13">    }</span>
+<span class="fc" id="L14">    public String getProductId() { return productId; }</span>
+<span class="fc" id="L15">    public String getProductName() { return productName; }</span>
+<span class="fc" id="L16">    public double getPrice() { return price; }</span>
+<span class="fc" id="L17">    public int getQuantity() { return quantity; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

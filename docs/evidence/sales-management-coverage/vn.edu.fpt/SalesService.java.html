@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SalesService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sales-management</a> &gt; <a href="index.source.html" class="el_package">vn.edu.fpt</a> &gt; <span class="el_source">SalesService.java</span></div><h1>SalesService.java</h1><pre class="source lang-java linenums">package vn.edu.fpt;
+<span class="fc" id="L2">public class SalesService {</span>
+    public double calculateSubtotal(Product product) {
+<span class="fc bfc" id="L4" title="All 2 branches covered.">        if (product == null) throw new IllegalArgumentException(&quot;Product cannot be null&quot;);</span>
+<span class="fc" id="L5">        return product.getPrice() * product.getQuantity();</span>
+    }
+    public double calculateDiscount(double subtotal) {
+<span class="fc bfc" id="L8" title="All 2 branches covered.">        if (subtotal &lt; 0) throw new IllegalArgumentException(&quot;Subtotal cannot be negative&quot;);</span>
+<span class="fc bfc" id="L9" title="All 2 branches covered.">        if (subtotal &lt; 1000) return 0;</span>
+<span class="fc bfc" id="L10" title="All 2 branches covered.">        else if (subtotal &lt; 5000) return subtotal * 0.05;</span>
+<span class="fc bfc" id="L11" title="All 2 branches covered.">        else if (subtotal &lt; 10000) return subtotal * 0.10;</span>
+<span class="fc" id="L12">        else return subtotal * 0.15;</span>
+    }
+    public double calculateShippingFee(double subtotal) {
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        if (subtotal &lt; 0) throw new IllegalArgumentException(&quot;Subtotal cannot be negative&quot;);</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (subtotal &lt; 2000) return 50;</span>
+<span class="fc" id="L17">        return 0;</span>
+    }
+    public double calculateTotal(Product product) {
+<span class="fc" id="L20">        double subtotal = calculateSubtotal(product);</span>
+<span class="fc" id="L21">        double discount = calculateDiscount(subtotal);</span>
+<span class="fc" id="L22">        double shipping = calculateShippingFee(subtotal);</span>
+<span class="fc" id="L23">        return subtotal - discount + shipping;</span>
+    }
+    public String classifyCustomer(double total) {
+        // Additional assumption: negative monetary totals are invalid.
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (total &lt; 0) throw new IllegalArgumentException(&quot;Total cannot be negative&quot;);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (total &lt; 1000) return &quot;REGULAR&quot;;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        else if (total &lt; 5000) return &quot;SILVER&quot;;</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        else if (total &lt; 10000) return &quot;GOLD&quot;;</span>
+<span class="fc" id="L31">        else return &quot;VIP&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

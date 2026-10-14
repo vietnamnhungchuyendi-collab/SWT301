@@ -1,0 +1,21 @@
+{
+  "started": "2026-10-14T14:11:03.047000+07:00",
+  "passed": 48,
+  "failed": 0,
+  "unit": 45,
+  "integration": 3,
+  "suites": 3,
+  "assertions": 192,
+  "run_seconds": 2.693,
+  "change": "Separate existing test inputs/fixtures/expected values into JSON; identical case names/assertions; unchanged production handlers",
+  "sha256": {
+    "backend/tests/unit/auth.test.js": "332e161127c52c696870490580b2166a3ea9d3218053b434cc2f92a163277320",
+    "backend/tests/unit/reset-password.test.js": "302c6f1b27608b6e5656645b45c748e80f8baf699d39b2fe211bdc4fb0bc2d3f",
+    "backend/tests/integration/auth-flow.test.js": "c63c382fe852d46f3432b4d2de8e488e38eb0c22c4091114874ba5c8be428f23",
+    "backend/tests/data/common.json": "01188f39b96c86325f8849a82badae6eee023a03180fc0b868ac68b7479c4b36",
+    "backend/tests/data/integration.json": "47c2327b6f9167b1e254b3478ae15d15530db3d032511c5a4a37427a0f21b819",
+    "backend/tests/data/login.json": "e38172e3c9f1afab7a35201b510d533f1d3a07326654dc2a53ba51ad313bd949",
+    "backend/tests/data/register.json": "315037520bc079df6fdc7b6057cab5c02232637ccc6593789c22f4d48720bee5",
+    "backend/tests/data/reset-password.json": "d821c5917e02c8861a30e8fe7ec048ebaafcd322e4af1b0d73f671de037cbaf9"
+  }
+}

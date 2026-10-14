@@ -1,0 +1,38 @@
+name: Sales Management CI
+on:
+  push:
+    branches: [main, develop, 'codex/**']
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: labs/sales-management
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: labs/sales-management/pom.xml
+      - name: Build and test
+        run: mvn -B clean verify --file pom.xml
+      - name: Stage JAR
+        run: mkdir -p staging && cp target/*.jar staging/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sales-management-1.0-SNAPSHOT
+          path: labs/sales-management/staging/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sales-test-evidence
+          path: |
+            labs/sales-management/target/surefire-reports/
+            labs/sales-management/target/site/jacoco/

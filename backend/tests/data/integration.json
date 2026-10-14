@@ -1,0 +1,14 @@
+{
+  "account":{"fullName":"Integration User","email":"integration@example.com","password":"Aa12345!","role":"EMPLOYER"},
+  "userDefaults":{"user_id":1,"is_email_verified":false,"status":"ACTIVE"},
+  "recordIds":{"user":1,"otp":1,"reset":2},
+  "jwtSecret":"integration-only-secret",
+  "newPassword":"Bb12345!",
+  "routes":{"register":"/register","verify":"/verify-email","login":"/login","forgot":"/forgot-password","reset":"/reset-password"},
+  "expected":{"registerStatus":201,"resetStatus":200,"loginStatus":200,"replayStatus":400,"newPasswordMatches":true,"oldPasswordMatches":false,"tokenUsed":true,"claims":{"userId":1,"email":"integration@example.com","roles":["EMPLOYER"]}},
+  "cases":[
+    {"id":"I01","name":"register persists real password hash and emails persisted OTP"},
+    {"id":"I02","name":"forgotten password reset writes real hash and consumes reset token"},
+    {"id":"I03","name":"recovered account logs in with new password and rejects token reuse"}
+  ]
+}

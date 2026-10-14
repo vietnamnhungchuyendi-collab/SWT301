@@ -1,8 +1,7 @@
 # Node modules
 node_modules/
-package-lock.json
 
-# Environment variables (QUAN TRỌNG: không push lên Git)
+# Environment variables: never commit real credentials
 .env
 .env.local
 .env.production
@@ -14,3 +13,14 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Maven and NetBeans
+**/target/
+**/nbproject/private/
+*.class
+*.jar
+# Generated test output
+backend/tests/coverage/
+backend/tests/results.json
+backend/.jest-cache/
+**/staging/

@@ -1,0 +1,8 @@
+{
+  "authClock": "2026-10-07T00:00:00Z",
+  "recoveryClock": "2026-10-12T00:00:00Z",
+  "randomValue": 0.5,
+  "mockCrypto": {"salt": "salt", "passwordHash": "hashed", "newPasswordHash": "new-hash", "jwt": "jwt-token"},
+  "mockEmail": {"simulated": true},
+  "errors": {"database": "offline", "signing": "key", "hashing": "hash error"}
+}

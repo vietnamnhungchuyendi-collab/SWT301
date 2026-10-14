@@ -1,0 +1,21 @@
+{
+  "baseInput": {"fullName":"Test User","email":"test@example.com","password":"Aa12345!","role":"FREELANCER"},
+  "insertedUserId": 7,
+  "cases": [
+    {"id":"R01","name":"missing name","kind":"validation","input":{"fullName":""},"expected":{"status":400}},
+    {"id":"R02","name":"missing email","kind":"validation","input":{"email":""},"expected":{"status":400}},
+    {"id":"R03","name":"missing password","kind":"validation","input":{"password":""},"expected":{"status":400}},
+    {"id":"R04","name":"missing role","kind":"validation","input":{"role":""},"expected":{"status":400}},
+    {"id":"R05","name":"invalid role","kind":"validation","input":{"role":"ADMIN"},"expected":{"status":400}},
+    {"id":"R06","name":"password 7 characters","kind":"validation","input":{"password":"Aa1234!"},"expected":{"status":400}},
+    {"id":"R07","name":"no uppercase","kind":"validation","input":{"password":"aa12345!"},"expected":{"status":400}},
+    {"id":"R08","name":"no lowercase","kind":"validation","input":{"password":"AA12345!"},"expected":{"status":400}},
+    {"id":"R09","name":"missing digit or special character","kind":"passwordPartitions","passwords":["Aaabcdef!","Aa123456"],"expected":{"status":400,"message":"Mật khẩu phải có ít nhất 8 ký tự"}},
+    {"id":"R10","name":"database failure","kind":"databaseFailure","expected":{"status":500,"message":"lỗi hệ thống"}},
+    {"id":"R11","name":"duplicate email","kind":"duplicate","records":[[{}]],"expected":{"status":400,"body":{"message":"Email đã được sử dụng."},"queryCount":1}},
+    {"id":"R12","name":"invalid phone","kind":"invalidPhone","input":{"phone":"123"},"expected":{"status":400,"message":"Số điện thoại không hợp lệ","queryCount":1}},
+    {"id":"R13","name":"duplicate phone","kind":"duplicate","input":{"phone":"0912345678"},"records":[[],[{}]],"expected":{"status":400,"body":{"message":"Số điện thoại đã được sử dụng."},"queryCount":2}},
+    {"id":"R14","name":"valid freelancer","kind":"success","input":{"role":"freelancer"},"expected":{"status":201,"queryCount":5,"body":{"success":true,"userId":7,"email":"test@example.com","otpCode":"550000"},"emailArgs":["test@example.com","550000","Test User"]}},
+    {"id":"R15","name":"valid EMPLOYER","kind":"success","input":{"role":"EMPLOYER","phone":"0912345678"},"expected":{"status":201,"queryCount":5,"body":{"success":true,"userId":7,"email":"test@example.com","otpCode":"550000"},"emailArgs":["test@example.com","550000","Test User"]}}
+  ]
+}
