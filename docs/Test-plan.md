@@ -81,3 +81,7 @@ Each case resets state; SQL/email fake, Express/bcrypt/JWT real. Dedicated test-
 
 ## Planned staging
 ST-01 registration boundaries; ST-02 reset password/token reuse; ST-03 locked login. AT-01/02 freelancer/employer recovery journeys. All five Pending, not executed. Details in Report5_Test Report.xlsx. Full catalogue 53; executed 48/53=90.57%; PASS among executed 48/48=100%.
+
+
+## Tách dữ liệu và code test — 14/10/2026
+Dữ liệu và expected ở backend/tests/data/{common,register,login,reset-password,integration}.json. Code thực thi/assertions ở tests/unit và tests/integration; mock engine ở unit/mocks. Xem backend/tests/data/README.md để sửa đúng một scenario. Giữ nguyên 48 case names, 192 assertions và coverage 100% của các module được chọn. Không đổi handler production, case IDs, nội dung Excel hoặc trạng thái 5 ST/AT Pending. Báo cáo Word/Excel vẫn mô tả cùng các ca và bằng chứng baseline 12/10; lần xác minh refactor mới lưu riêng tại docs/evidence/data-separation-2026-10-14.

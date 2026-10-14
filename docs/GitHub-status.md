@@ -18,3 +18,9 @@ Download the FJMS run artifact `fjms-test-evidence` for CI-generated JSON and co
 Current reports: Report5_Test Documentation.docx, Report5_Unit Test.xlsx and Report5_Test Report.xlsx. Report5_UnitTest.xlsx is a byte-identical alias retained so existing links open the updated form. Both Description and Sheet Name navigate to the relevant 15-case matrix. The Vietnamese explanation and README_NopBai accompany the three submission files. Five staging cases remain Pending.
 
 Historical Java evidence and verification evidence are retained separately. Prior deliberate V08 FAIL/PASS remains at runs 38164135977/38164201150 on codex/fjms-fail-pass-demo and is not part of the new R/P/L baseline.
+
+
+## Tách dữ liệu và code test — 14/10/2026
+Dữ liệu và expected ở backend/tests/data/{common,register,login,reset-password,integration}.json. Code thực thi/assertions ở tests/unit và tests/integration; mock engine ở unit/mocks. Xem backend/tests/data/README.md để sửa đúng một scenario. Giữ nguyên 48 case names, 192 assertions và coverage 100% của các module được chọn. Không đổi handler production, case IDs, nội dung Excel hoặc trạng thái 5 ST/AT Pending. Báo cáo Word/Excel vẫn mô tả cùng các ca và bằng chứng baseline 12/10; lần xác minh refactor mới lưu riêng tại docs/evidence/data-separation-2026-10-14.
+
+Các run liệt kê phía trên thuộc commit trước tách dữ liệu. CI mới của refactor sẽ được ghi khi chạy thực tế hoàn tất.

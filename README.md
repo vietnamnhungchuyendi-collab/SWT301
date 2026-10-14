@@ -5,7 +5,7 @@
 [![Sales Management CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/sales-ci.yml/badge.svg?branch=codex%2Fslot7-testing-ci)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/sales-ci.yml)
 [![FJMS Authentication CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/fjms-ci.yml/badge.svg?branch=codex%2Fslot7-testing-ci)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/fjms-ci.yml)
 
-- [Testing README](backend/tests/README.md), [Test plan](docs/Test-plan.md), [AI prompts](docs/AI-prompts.md), [Metrics](docs/Metrics.md)
+- [Test data](backend/tests/data/README.md), [Testing README](backend/tests/README.md), [Test plan](docs/Test-plan.md), [AI prompts](docs/AI-prompts.md), [Metrics](docs/Metrics.md)
 - [Report5 Unit Test](docs/Report5_UnitTest.xlsx), [Testing Documentation](docs/Report5_Test%20Documentation.docx), [Other Test Cases](docs/Report5_Test%20Report.xlsx), [Vietnamese explanation](docs/Giai_thich_Report5.docx), [presentation](docs/Presentation.html), [demo](docs/Demo.md)
 - [Requirement comparison](docs/Requirement-check.md), [GitHub execution status](docs/GitHub-status.md)
 

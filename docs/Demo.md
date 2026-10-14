@@ -1,7 +1,7 @@
 # Demo nhóm — 5–7 phút
 
 1. Giới thiệu Authentication: register/resetPassword/login, 15 unit mỗi hàm.
-2. Mở unit/auth.test.js và unit/reset-password.test.js; giải thích Given–When–Then, expect, jest.mock/fn/spyOn, beforeEach/afterEach, test.each.
+2. Mở tests/data/register.json, login.json, reset-password.json, integration.json để giới thiệu dữ liệu riêng. Sau đó mở unit/auth.test.js và unit/reset-password.test.js; giải thích Given–When–Then, expect, jest.mock/fn/spyOn, beforeEach/afterEach, test.each.
 3. Chạy `npm test -- --testNamePattern="R14|P09|L06"`: password boundary, reset expiry equality, invalid login.
 4. Chạy `npm test -- --testNamePattern=I03`: forgot/reset → new-password login → reset-token replay rejection; bcrypt/JWT thật, SQL/email fake.
 5. Chạy `npm run test:ci`; xem 48 PASS, 192 assertions, scoped coverage và gate 80%.

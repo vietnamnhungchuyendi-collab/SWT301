@@ -1,37 +1,44 @@
 jest.mock('../../config/db.js',()=>{const d=require('./mocks/dependencies.js');return {sql:d.mockSql,poolPromise:Promise.resolve(d.mockPool)};});
 jest.mock('../../utils/emailService.js',()=>({sendOTPEmail:jest.fn()}));
-jest.mock('bcryptjs',()=>({genSaltSync:jest.fn(()=> 'salt'),hashSync:jest.fn(()=> 'new-hash')}));
+jest.mock('bcryptjs',()=>{const {mockCrypto}=require('../data/common.json');return {genSaltSync:jest.fn(()=>mockCrypto.salt),hashSync:jest.fn(()=>mockCrypto.newPasswordHash)};});
 import {resetPassword} from '../../controllers/passwordRecovery.js';
 import {mockQuery,mockQueries,resetDb,response} from './mocks/dependencies.js';
 import bcrypt from 'bcryptjs';
-const input={email:'test@example.com',otpCode:'550000',newPassword:'Bb12345!'};
-beforeEach(()=>{resetDb();jest.useFakeTimers().setSystemTime(new Date('2026-10-12T00:00:00Z'));jest.spyOn(console,'error').mockImplementation(()=>{});});
+import common from '../data/common.json';
+import recovery from '../data/reset-password.json';
+
+beforeEach(()=>{resetDb();jest.useFakeTimers().setSystemTime(new Date(common.recoveryClock));jest.spyOn(console,'error').mockImplementation(()=>{});});
 afterEach(()=>{jest.useRealTimers();jest.restoreAllMocks();});
-test.each([['P01','email'],['P02','otpCode'],['P03','newPassword'],['P04','short']])('%s invalid input %s',async(id,key)=>{
- const body={...input,...(key==='short'?{newPassword:'Bb1234!'}:{[key]:''})};const res=response();await resetPassword({body},res);
- expect(res.status).toHaveBeenCalledWith(400);expect(res.json.mock.calls[0][0].message).toEqual(expect.any(String));expect(mockQueries).toHaveLength(0);expect(bcrypt.hashSync).not.toHaveBeenCalled();
-});
-test('P05 password character partitions',async()=>{
- for(const newPassword of ['bb12345!','BB12345!']){const res=response();await resetPassword({body:{...input,newPassword}},res);expect(res.status).toHaveBeenCalledWith(400);expect(mockQueries).toHaveLength(0);}
-});
-test('P06 unknown account',async()=>{const res=response();await resetPassword({body:input},res);expect(res.status).toHaveBeenCalledWith(404);expect(mockQueries).toHaveLength(1);expect(bcrypt.hashSync).not.toHaveBeenCalled();expect(res.json.mock.calls[0][0].message).toContain('tài khoản');});
-test('P07 invalid or already used reset token',async()=>{
- mockQuery.mockResolvedValueOnce({recordset:[{user_id:7}]});const res=response();await resetPassword({body:input},res);
- expect(res.status).toHaveBeenCalledWith(400);expect(mockQueries).toHaveLength(2);expect(mockQueries[1].text).toContain('is_used = 0');expect(bcrypt.hashSync).not.toHaveBeenCalled();
-});
-test('P08 token expired one millisecond ago',async()=>{
- mockQuery.mockResolvedValueOnce({recordset:[{user_id:7}]}).mockResolvedValueOnce({recordset:[{reset_id:9,expired_at:new Date(Date.now()-1)}]});const res=response();await resetPassword({body:input},res);
- expect(res.status).toHaveBeenCalledWith(400);expect(res.json.mock.calls[0][0].message).toContain('hết hạn');expect(mockQueries).toHaveLength(2);expect(bcrypt.hashSync).not.toHaveBeenCalled();
-});
-test.each([['P09',0],['P10',1]])('%s token expiry offset %s',async(id,offset)=>{
- mockQuery.mockResolvedValueOnce({recordset:[{user_id:7}]}).mockResolvedValueOnce({recordset:[{reset_id:9,expired_at:new Date(Date.now()+offset)}]});const res=response();await resetPassword({body:input},res);
- expect(res.status).toHaveBeenCalledWith(200);expect(res.json.mock.calls[0][0].success).toBe(true);expect(mockQueries[2].inputs).toMatchObject({userId:7,passwordHash:'new-hash'});expect(mockQueries[3].inputs.resetId).toBe(9);
-});
-test.each([['P11',1],['P12',2],['P13',3],['P14',4]])('%s database query %s fails',async(id,fail)=>{
- let count=0;mockQuery.mockImplementation(async()=>{if(++count===fail)throw new Error('offline');return {recordset:count===1?[{user_id:7}]:count===2?[{reset_id:9,expired_at:new Date(Date.now()+600000)}]:[]};});const res=response();await resetPassword({body:input},res);
- expect(res.status).toHaveBeenCalledWith(500);expect(res.json.mock.calls[0][0].message).toContain('lỗi hệ thống');expect(mockQueries).toHaveLength(fail);expect(res.json.mock.calls[0][0].success).toBeUndefined();
-});
-test('P15 hashing fails before password write',async()=>{
- mockQuery.mockResolvedValueOnce({recordset:[{user_id:7}]}).mockResolvedValueOnce({recordset:[{reset_id:9,expired_at:new Date(Date.now()+600000)}]});bcrypt.hashSync.mockImplementationOnce(()=>{throw new Error('hash error');});const res=response();await resetPassword({body:input},res);
- expect(res.status).toHaveBeenCalledWith(500);expect(mockQueries).toHaveLength(2);expect(res.json.mock.calls[0][0].success).toBeUndefined();expect(console.error).toHaveBeenCalled();
+
+test.each(recovery.cases)('$id $name',async scenario=>{
+ const data=structuredClone(scenario),expected=data.expected,body={...recovery.baseInput,...data.input};
+ if(data.kind==='passwordPartitions'){
+  for(const newPassword of data.passwords){const res=response();await resetPassword({body:{...body,newPassword}},res);expect(res.status).toHaveBeenCalledWith(expected.status);expect(mockQueries).toHaveLength(0);}
+  return;
+ }
+ const token={reset_id:recovery.resetId,expired_at:new Date(Date.now()+(data.expiryOffsetMs??recovery.validExpiryOffsetMs))};
+ if(!['invalidInput','unknown','queryFailure'].includes(data.kind))mockQuery.mockResolvedValueOnce({recordset:[{...recovery.user}]});
+ if(['expired','success','hashingFailure'].includes(data.kind))mockQuery.mockResolvedValueOnce({recordset:[token]});
+ if(data.kind==='hashingFailure')bcrypt.hashSync.mockImplementationOnce(()=>{throw new Error(common.errors.hashing);});
+ if(data.kind==='queryFailure'){
+  let count=0;mockQuery.mockImplementation(async()=>{if(++count===data.failAt)throw new Error(common.errors.database);return {recordset:count===1?[{...recovery.user}]:count===2?[token]:[]};});
+ }
+ const res=response();await resetPassword({body},res);expect(res.status).toHaveBeenCalledWith(expected.status);
+ switch(data.kind){
+  case 'invalidInput':
+   expect(res.json.mock.calls[0][0].message).toEqual(expect.any(String));expect(mockQueries).toHaveLength(0);expect(bcrypt.hashSync).not.toHaveBeenCalled();break;
+  case 'unknown':
+   expect(mockQueries).toHaveLength(expected.queryCount);expect(bcrypt.hashSync).not.toHaveBeenCalled();expect(res.json.mock.calls[0][0].message).toContain(expected.message);break;
+  case 'invalidToken':
+   expect(mockQueries).toHaveLength(expected.queryCount);expect(mockQueries[1].text).toContain(expected.queryPredicate);expect(bcrypt.hashSync).not.toHaveBeenCalled();break;
+  case 'expired':
+   expect(res.json.mock.calls[0][0].message).toContain(expected.message);expect(mockQueries).toHaveLength(expected.queryCount);expect(bcrypt.hashSync).not.toHaveBeenCalled();break;
+  case 'success':
+   expect(res.json.mock.calls[0][0].success).toBe(expected.success);expect(mockQueries[2].inputs).toMatchObject(expected.passwordWrite);expect(mockQueries[3].inputs.resetId).toBe(expected.usedResetId);break;
+  case 'queryFailure':
+   expect(res.json.mock.calls[0][0].message).toContain(expected.message);expect(mockQueries).toHaveLength(expected.queryCount);expect(res.json.mock.calls[0][0].success).toBeUndefined();break;
+  case 'hashingFailure':
+   expect(mockQueries).toHaveLength(expected.queryCount);expect(res.json.mock.calls[0][0].success).toBeUndefined();expect(console.error).toHaveBeenCalled();break;
+  default:throw new Error(`Unsupported recovery scenario: ${data.kind}`);
+ }
 });

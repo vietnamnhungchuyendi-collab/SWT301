@@ -1,5 +1,7 @@
 # Selected authentication tests
 
+Test data is separate from test code. See [data/README.md](data/README.md): JSON files contain fixtures, inputs, scenario conditions and expected values. Files in unit/ and integration/ contain setup, handler/HTTP calls and assertions. SQL mock machinery remains in unit/mocks/. The three selected functions and all 48 case names/assertions are unchanged.
+
 45 unit cases: register R01-R15, resetPassword P01-P15, login L01-L15. Three isolated HTTP integration cases cover registration, forgotten-password reset, new-password login and used-token replay rejection. verifyEmail and forgotPassword are integration setup, not additional selected unit functions.
 
 Run npm ci then npm run test:ci. Unit dependencies are mocked; integration uses real bcrypt/JWT and fake SQL/email. Coverage measures authSelectedCore.js and passwordRecovery.js with an 80 percent gate. Live SQL transactions, concurrency and SMTP require staging tests.

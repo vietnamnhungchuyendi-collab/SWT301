@@ -1,0 +1,22 @@
+{
+  "baseInput":{"fullName":"Test User","email":"test@example.com","password":"Aa12345!","role":"FREELANCER"},
+  "baseUser":{"user_id":7,"email":"test@example.com","full_name":"Test User","password_hash":"hashed","role_default":"FREELANCER","status":"ACTIVE","is_email_verified":true},
+  "tokenOptions":{"expiresIn":"7d"},
+  "cases":[
+    {"id":"L01","name":"missing input","kind":"missing","input":{"email":"","password":"Aa12345!"},"expected":{"status":400,"message":"đầy đủ"}},
+    {"id":"L02","name":"missing input","kind":"missing","input":{"email":"test@example.com","password":""},"expected":{"status":400,"message":"đầy đủ"}},
+    {"id":"L03","name":"unknown email","kind":"unknown","expected":{"status":400,"message":"không chính xác"}},
+    {"id":"L04","name":"status LOCKED","kind":"blocked","user":{"status":"LOCKED"},"expected":{"status":403,"message":"LOCKED"}},
+    {"id":"L05","name":"status SUSPENDED","kind":"blocked","user":{"status":"SUSPENDED"},"expected":{"status":403,"message":"SUSPENDED"}},
+    {"id":"L06","name":"wrong password","kind":"wrongPassword","expected":{"status":400,"message":"không chính xác","queryCount":1}},
+    {"id":"L07","name":"unverified email sends OTP","kind":"unverified","user":{"is_email_verified":false},"expected":{"status":401,"body":{"isEmailVerified":false,"otpCode":"550000"},"emailArgs":["test@example.com","550000","Test User"]}},
+    {"id":"L08","name":"valid FREELANCER","kind":"success","user":{"role_default":"FREELANCER","password_hash":"hashed"},"roles":[{"role_name":"FREELANCER"}],"expected":{"status":200,"body":{"success":true,"token":"jwt-token","user":{"userId":7,"roles":["FREELANCER"]}},"claims":{"userId":7,"roles":["FREELANCER"]},"token":"jwt-token"}},
+    {"id":"L09","name":"valid ADMIN","kind":"success","user":{"role_default":"ADMIN","password_hash":"Aa12345!"},"roles":[{"role_name":"ADMIN"}],"expected":{"status":200,"body":{"success":true,"token":"jwt-token","user":{"userId":7,"roles":["ADMIN"]}},"claims":{"userId":7,"roles":["ADMIN"]},"token":"jwt-token"}},
+    {"id":"L10","name":"valid ADMIN","kind":"success","user":{"role_default":"ADMIN","password_hash":"hashed"},"roles":[{"role_name":"ADMIN"}],"expected":{"status":200,"body":{"success":true,"token":"jwt-token","user":{"userId":7,"roles":["ADMIN"]}},"claims":{"userId":7,"roles":["ADMIN"]},"token":"jwt-token"}},
+    {"id":"L11","name":"query 1 failure","kind":"queryFailure","failAt":1,"roles":[{"role_name":"FREELANCER"}],"expected":{"status":500,"message":"lỗi","queryCount":1}},
+    {"id":"L12","name":"query 2 failure","kind":"queryFailure","failAt":2,"roles":[{"role_name":"FREELANCER"}],"expected":{"status":500,"message":"lỗi","queryCount":2}},
+    {"id":"L13","name":"query 3 failure","kind":"queryFailure","failAt":3,"roles":[{"role_name":"FREELANCER"}],"expected":{"status":500,"message":"lỗi","queryCount":3}},
+    {"id":"L14","name":"signing failure","kind":"signingFailure","roles":[],"expected":{"status":500,"message":"lỗi","queryCount":2}},
+    {"id":"L15","name":"OTP persistence failure","kind":"otpFailure","user":{"is_email_verified":false},"expected":{"status":500,"queryCount":2}}
+  ]
+}

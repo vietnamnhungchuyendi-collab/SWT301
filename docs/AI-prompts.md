@@ -44,3 +44,7 @@ Kết quả: backend/tests/README.md, docs/Metrics.md, Demo.md, Presentation.htm
 Người dùng chọn thay xác minh email bằng luồng quên/đặt lại mật khẩu để giữ ba hàm chính. Sinh P01–P15, thay integration I02/I03, cập nhật Word/Excel/hyperlink/preconditions và đo lại coverage. forgotPassword tạo mã trong integration, không thêm unit function thứ tư. Kết quả hiện tại: 48 PASS/3 suites, 192 assertions, lines97/97/statements98/98/branches57/57/functions4/4, elapsed1.577s. Các cold/warm và verification metrics kể ở Prompt0–6 là lịch sử trước thay đổi, không số liệu recovery mới.
 
 Review: phát hiện rủi ro thiếu transaction giữa password write và token-used update; mô tả giới hạn P14/SQL fake. PNG trong evidence là report previews của số liệu thật; JSON/log là bằng chứng thực thi. Thân handler không đổi, không thêm coverage ignore. Description giờ có internal hyperlink thật; tăng row height/wrap để đủ nội dung, giữ form.
+
+
+## Prompt 8 — Tách dữ liệu và code test
+Người dùng yêu cầu tách dữ liệu test riêng và code test riêng. Đưa fixtures/inputs/expected và case metadata vào JSON, giữ setup/assertions trong test files. Chạy lại và so sánh case names, numPassingAsserts, coverage với baseline: cùng 48 cases/192 assertions, 100% selected coverage. Giữ nguyên các case và handlers, không đổi expected để PASS.

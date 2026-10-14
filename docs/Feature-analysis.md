@@ -13,3 +13,7 @@ forgotPassword tạo token cho integration; verifyEmail chuẩn bị tài khoả
 Các thân handler được giữ nguyên: register/login ở authSelectedCore.js, verifyEmail ở authVerification.js, resetPassword ở passwordRecovery.js. authCore.js/authController.js giữ public exports và routes cũ. Coverage chỉ hai module chứa ba hàm đã chọn; không thêm ignore để che nhánh.
 
 Rủi ro cần triage: ADMIN plaintext fallback, log mật khẩu, OTP/resetToken lộ trong response, và password write/token update không có transaction chung. P14 chỉ chứng minh handler trả 500 khi query cuối lỗi, không chứng minh rollback hoặc an toàn concurrency. SQL fake không kiểm chứng schema/isolation/SMTP thật.
+
+
+## Tách dữ liệu và code test — 14/10/2026
+Dữ liệu và expected ở backend/tests/data/{common,register,login,reset-password,integration}.json. Code thực thi/assertions ở tests/unit và tests/integration; mock engine ở unit/mocks. Xem backend/tests/data/README.md để sửa đúng một scenario. Giữ nguyên 48 case names, 192 assertions và coverage 100% của các module được chọn. Không đổi handler production, case IDs, nội dung Excel hoặc trạng thái 5 ST/AT Pending. Báo cáo Word/Excel vẫn mô tả cùng các ca và bằng chứng baseline 12/10; lần xác minh refactor mới lưu riêng tại docs/evidence/data-separation-2026-10-14.

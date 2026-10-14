@@ -14,3 +14,9 @@ Gate 80% per metric; not whole-project or live SQL coverage. Unit classification
 Source: evidence/results.json, run-log.txt, coverage-summary.json, manifest.json, fjms-coverage/index.html. Test-results.png/Coverage.png are rendered report previews from actual figures, not terminal screenshots. Previous verification results are archived under evidence/historical-verification-2026-10-07.
 
 Java historical results remain separate: MathUtil13/13, Sales42/42. Their evidence/workflows remain unchanged; latest GitHub status is in GitHub-status.md.
+
+
+## Tách dữ liệu và code test — 14/10/2026
+Dữ liệu và expected ở backend/tests/data/{common,register,login,reset-password,integration}.json. Code thực thi/assertions ở tests/unit và tests/integration; mock engine ở unit/mocks. Xem backend/tests/data/README.md để sửa đúng một scenario. Giữ nguyên 48 case names, 192 assertions và coverage 100% của các module được chọn. Không đổi handler production, case IDs, nội dung Excel hoặc trạng thái 5 ST/AT Pending. Báo cáo Word/Excel vẫn mô tả cùng các ca và bằng chứng baseline 12/10; lần xác minh refactor mới lưu riêng tại docs/evidence/data-separation-2026-10-14.
+
+Lần xác minh sau tách: 3 suites, 48 PASS, 0 failed/skipped, 192 assertions; elapsed 2.693s. Coverage target/denominator không thay đổi. Đây là elapsed test-run, không phải response time.

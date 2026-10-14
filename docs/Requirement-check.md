@@ -82,3 +82,7 @@ Phần tài liệu đáp ứng toàn bộ mục yêu cầu. Phần thực thi đ
 
 ## Thay đổi đã được người dùng chọn
 Giữ ba hàm chính register/resetPassword/login. forgotPassword và verifyEmail chỉ là setup integration. Thay 15 V-case bằng 15 P-case; không cộng cả bộ cũ vào thống kê mới. Description có hyperlink thật đến A9 của mỗi bảng 15 ca, tiền điều kiện chi tiết hơn và wrap nội dung. Coverage target là module chứa đúng ba hàm đã chọn; các handler được di chuyển nguyên thân, public exports/routes giữ tương thích.
+
+
+## Tách dữ liệu và code test — 14/10/2026
+Dữ liệu và expected ở backend/tests/data/{common,register,login,reset-password,integration}.json. Code thực thi/assertions ở tests/unit và tests/integration; mock engine ở unit/mocks. Xem backend/tests/data/README.md để sửa đúng một scenario. Giữ nguyên 48 case names, 192 assertions và coverage 100% của các module được chọn. Không đổi handler production, case IDs, nội dung Excel hoặc trạng thái 5 ST/AT Pending. Báo cáo Word/Excel vẫn mô tả cùng các ca và bằng chứng baseline 12/10; lần xác minh refactor mới lưu riêng tại docs/evidence/data-separation-2026-10-14.
