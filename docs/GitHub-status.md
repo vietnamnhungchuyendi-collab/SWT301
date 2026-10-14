@@ -23,4 +23,12 @@ Historical Java evidence and verification evidence are retained separately. Prio
 ## Tách dữ liệu và code test — 14/10/2026
 Dữ liệu và expected ở backend/tests/data/{common,register,login,reset-password,integration}.json. Code thực thi/assertions ở tests/unit và tests/integration; mock engine ở unit/mocks. Xem backend/tests/data/README.md để sửa đúng một scenario. Giữ nguyên 48 case names, 192 assertions và coverage 100% của các module được chọn. Không đổi handler production, case IDs, nội dung Excel hoặc trạng thái 5 ST/AT Pending. Báo cáo Word/Excel vẫn mô tả cùng các ca và bằng chứng baseline 12/10; lần xác minh refactor mới lưu riêng tại docs/evidence/data-separation-2026-10-14.
 
-Các run liệt kê phía trên thuộc commit trước tách dữ liệu. CI mới của refactor sẽ được ghi khi chạy thực tế hoàn tất.
+Các run liệt kê phía trên thuộc commit trước tách dữ liệu. Commit refactor **50304c85f88e607fedaa8b9a8f9098d41b86e630** đã SUCCESS trên cả ba workflow, cho push và PR:
+
+| Workflow | PR run SUCCESS | Push run SUCCESS |
+|---|---|---|
+| FJMS | [38526938433](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/runs/38526938433) | [38526932343](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/runs/38526932343) |
+| MathUtil | [38526938511](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/runs/38526938511) | [38526932293](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/runs/38526932293) |
+| Sales | [38526938538](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/runs/38526938538) | [38526932303](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/runs/38526932303) |
+
+Đây là kiểm chứng trên GitHub sau tách dữ liệu. Commit tài liệu tiếp theo chỉ ghi các liên kết này; mã/test data đã được kiểm chứng ở commit trên.
