@@ -1,3 +1,15 @@
+# SWT301 — CI Maven: Exercise 1 và Exercise 2
+
+[![MathUtil CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/maven.yml/badge.svg?branch=codex%2Fmaven-ci-exercises-1-2)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/maven.yml?query=branch%3Acodex%2Fmaven-ci-exercises-1-2)
+[![Sales Management CI](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/sales-ci.yml/badge.svg?branch=codex%2Fmaven-ci-exercises-1-2)](https://github.com/vietnamnhungchuyendi-collab/SWT301/actions/workflows/sales-ci.yml?query=branch%3Acodex%2Fmaven-ci-exercises-1-2)
+
+Phạm vi bài nộp: Exercise 1 MathUtil và Exercise 2 Sales Management trong đề CI Maven. Không có Exercise 3, Jest hoặc Report5 trong gói CI này. Nhánh riêng: `codex/maven-ci-exercises-1-2`. Repository gốc vẫn chứa ứng dụng FJMS; đó không phải nội dung bài CI Java này.
+
+
+Chi tiết cài đặt và nộp bài: [README_CI_EX1_EX2.md](README_CI_EX1_EX2.md).
+
+---
+
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/nXoHondQ)
 
 # Freelancer Job Matching System (FJMS)

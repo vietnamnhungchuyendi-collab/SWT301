@@ -14,3 +14,14 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Maven / NetBeans (CI exercises 1 and 2)
+**/target/
+**/staging/
+**/nbproject/private/
+**/nbbuild/
+**/nbdist/
+*.class
+*.jar
+*.war
+*.ear
