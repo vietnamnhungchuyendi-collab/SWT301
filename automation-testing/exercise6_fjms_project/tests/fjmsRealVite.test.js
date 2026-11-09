@@ -445,4 +445,89 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(await retryBtn.isDisplayed()).toBe(true);
     });
   });
+
+  // ==========================================
+  // 8. CHỨC NĂNG TÌM KIẾM DỰ ÁN (SEARCH & FILTER JOBS - /browse-projects)
+  // ==========================================
+  describe('8. Kiểm thử chức năng Tìm kiếm & Lọc dự án việc làm (/browse-projects)', () => {
+    test('TC_VITE_SEARCH_001: Tìm kiếm dự án bằng thanh search trên Header và hiển thị kết quả', async () => {
+      // Xóa session để Header ở layout public
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.executeScript(`
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      `);
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      // Tìm thanh input search trên Header
+      const searchInput = await driver.wait(
+        until.elementLocated(By.xpath("//input[contains(@placeholder, 'Tìm kiếm')]")),
+        8000
+      );
+
+      // Tự động gõ từ khóa tìm kiếm và nhấn Enter
+      await searchInput.clear();
+      await searchInput.sendKeys('React', Key.RETURN);
+      await driver.sleep(2000);
+
+      // Kiểm tra URL đã chuyển hướng sang dạng search query ?q=React
+      const currentUrl = await driver.getCurrentUrl();
+      expect(currentUrl).toContain('q=React');
+    });
+
+    test('TC_VITE_SEARCH_002: Lọc dự án theo loại công việc (Category Checkbox)', async () => {
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      // Chọn checkbox Lập trình Web
+      const webCategoryCheckbox = await driver.wait(
+        until.elementLocated(By.xpath("//span[contains(text(), 'Lập trình Web')]/preceding-sibling::input[@type='checkbox'] | //label[contains(., 'Lập trình Web')]//input")),
+        8000
+      );
+
+      await webCategoryCheckbox.click();
+      await driver.sleep(1000);
+
+      // Xác nhận checkbox đã được tích chọn
+      expect(await webCategoryCheckbox.isSelected()).toBe(true);
+    });
+
+    test('TC_VITE_SEARCH_003: Lọc dự án theo khoảng ngân sách Min - Max', async () => {
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      const minInput = await driver.wait(
+        until.elementLocated(By.css("input[placeholder='Tối thiểu']")),
+        8000
+      );
+      const maxInput = await driver.findElement(By.css("input[placeholder='Tối đa']"));
+
+      // Tự động điền khoảng ngân sách từ 5.000.000 đến 50.000.000
+      await minInput.clear();
+      await minInput.sendKeys('5000000');
+
+      await maxInput.clear();
+      await maxInput.sendKeys('50000000');
+
+      expect(await minInput.getAttribute('value')).toBe('5000000');
+      expect(await maxInput.getAttribute('value')).toBe('50000000');
+    });
+
+    test('TC_VITE_SEARCH_004: Tự động bấm nút "Xóa tất cả" để hoàn tác các bộ lọc', async () => {
+      await driver.get(`${BASE_URL}/browse-projects?q=React`);
+      await driver.sleep(1500);
+
+      const clearBtn = await driver.wait(
+        until.elementLocated(By.xpath("//button[contains(text(), 'Xóa tất cả')]")),
+        8000
+      );
+      await clearBtn.click();
+      await driver.sleep(1000);
+
+      // Kiểm tra URL được reset sạch về /browse-projects
+      const currentUrl = await driver.getCurrentUrl();
+      expect(currentUrl).not.toContain('q=React');
+    });
+  });
 });

@@ -3,12 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import walletRoutes from './routes/walletRoutes.js';
-import bankAccountRoutes from './routes/bankAccountRoutes.js';
-import vnpayRoutes from './modules/payment/vnpay.routes.js';
-import transactionRoutes from './modules/transaction/transaction.routes.js';
-import escrowRoutes from './modules/escrow/escrow.routes.js';
-import withdrawalRoutes from './modules/withdrawal/withdrawal.routes.js';
 import { poolPromise } from './config/db.js';
 
 dotenv.config();
@@ -26,19 +20,9 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Main Authentication & User routes
+// Main Authentication routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-
-// Wallet & Banking routes
-if (walletRoutes) app.use('/api/wallet', walletRoutes);
-if (bankAccountRoutes) app.use('/api/bank-account', bankAccountRoutes);
-
-// Payment & VNPay routes
-if (vnpayRoutes) app.use('/api/payment/vnpay', vnpayRoutes);
-if (transactionRoutes) app.use('/api/wallet/transactions', transactionRoutes);
-if (escrowRoutes) app.use('/api/escrow', escrowRoutes);
-if (withdrawalRoutes) app.use('/api/withdrawal', withdrawalRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
