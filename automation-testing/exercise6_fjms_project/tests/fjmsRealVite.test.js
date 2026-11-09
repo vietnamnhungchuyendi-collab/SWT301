@@ -3,12 +3,50 @@ import { By, until, Key } from 'selenium-webdriver';
 
 describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite (http://localhost:5173)', () => {
   const BASE_URL = 'http://localhost:5173';
+  const SLOW_MS = parseInt(process.env.SLOW_MO || '600', 10); // Thời gian chờ giữa các thao tác (mặc định 600ms để dễ quan sát)
+  let rawDriver;
   let driver;
+
+  /**
+   * Hàm gõ từng ký tự một (human-like typing) để người xem thấy rõ chữ được gõ vào form
+   */
+  async function humanType(element, text, delayMs = 60) {
+    await element.clear();
+    for (const char of text) {
+      await element.sendKeys(char);
+      await rawDriver.sleep(delayMs);
+    }
+  }
 
   beforeAll(async () => {
     // Khởi động Chrome thật hiển thị trên màn hình
     await BaseTest.setUpBase();
-    driver = BaseTest.getDriver();
+    rawDriver = BaseTest.getDriver();
+
+    // Tạo Proxy tự động sleep nhẹ sau mỗi thao tác (click, sendKeys, clear, get)
+    // Giúp người xem nhìn rõ từng bước thao tác mượt mà
+    driver = new Proxy(rawDriver, {
+      get(target, prop) {
+        const val = target[prop];
+        if (typeof val === 'function') {
+          return async function (...args) {
+            const res = await val.apply(target, args);
+            if (['get', 'executeScript'].includes(prop)) {
+              await target.sleep(SLOW_MS);
+            }
+            return res;
+          };
+        }
+        return val;
+      }
+    });
+  });
+
+  afterEach(async () => {
+    // Nghỉ nhẹ sau mỗi test case để quan sát kết quả trên màn hình
+    if (rawDriver) {
+      await rawDriver.sleep(SLOW_MS);
+    }
   });
 
   afterAll(async () => {
