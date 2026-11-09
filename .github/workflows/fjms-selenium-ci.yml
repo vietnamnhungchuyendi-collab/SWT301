@@ -1,0 +1,61 @@
+name: FJMS Selenium Automation CI
+
+on:
+  push:
+    branches: [main, develop, 'codex/**']
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selenium-e2e-tests:
+    name: Run Selenium E2E Automation Tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: automation-testing
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: automation-testing/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run Exercise 1 (Parameterized Login Tests)
+        run: npm run test:ex1
+
+      - name: Run Exercise 2 (External CSV Data Tests)
+        run: npm run test:ex2
+
+      - name: Run Exercise 3 (POM Basic Tests)
+        run: npm run test:ex3
+
+      - name: Run Exercise 4 (Advanced POM BasePage & BaseTest)
+        run: npm run test:ex4
+
+      - name: Run Exercise 6 (FJMS Project Group E2E Tests)
+        run: npm run test:ex6
+
+      - name: Generate System Test Excel Report
+        run: npm run export:excel
+
+      - name: Upload Test Evidence & System Test Excel
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fjms-selenium-test-report
+          path: |
+            automation-testing/exercise6_fjms_project/reports/
+            docs/System_Test_Report_FJMS.xlsx

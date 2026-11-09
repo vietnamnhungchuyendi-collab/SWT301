@@ -1,0 +1,23 @@
+{
+  "name": "fjms-selenium-automation",
+  "version": "1.0.0",
+  "description": "Selenium WebDriver Dynamic Automation Testing Suite for FJMS & Web Exercises",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "test:ex1": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise1_parameterized --runInBand",
+    "test:ex2": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise2_csv --runInBand",
+    "test:ex3": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise3_pom --runInBand",
+    "test:ex4": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise4_basepage --runInBand",
+    "test:ex5": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise5_demoqa --runInBand",
+    "test:ex6": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise6_fjms_project --runInBand",
+    "export:excel": "node exercise6_fjms_project/generateExcelReport.js"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.27.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
