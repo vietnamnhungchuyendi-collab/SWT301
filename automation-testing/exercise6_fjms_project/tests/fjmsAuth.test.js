@@ -6,8 +6,9 @@ import { ProposalPage } from '../pages/ProposalPage.js';
 import { startFjmsTestServer } from '../mockServer.js';
 
 describe('Kiểm thử tự động E2E Dự án FJMS (Page Object Model, BasePage, BaseTest)', () => {
-  const PORT = 3050;
-  const BASE_URL = `http://localhost:${PORT}`;
+  // Ưu tiên chạy trực tiếp trên web Vite thật (cổng 5173), fallback về cổng 3050 nếu chưa bật
+  const PORT = process.env.BASE_URL ? null : 3050;
+  const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
   let server;
   let loginPage;
@@ -16,8 +17,10 @@ describe('Kiểm thử tự động E2E Dự án FJMS (Page Object Model, BasePa
   let proposalPage;
 
   beforeAll(async () => {
-    // Khởi động server test nội bộ cho dự án FJMS
-    server = await startFjmsTestServer(PORT);
+    // Nếu không truyền BASE_URL từ bên ngoài thì khởi động mockServer
+    if (!process.env.BASE_URL) {
+      server = await startFjmsTestServer(PORT);
+    }
 
     // Khởi tạo BaseTest và Page Objects
     await BaseTest.setUpBase();

@@ -12,6 +12,7 @@
     "test:ex5": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise5_demoqa --runInBand",
     "test:ex6": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise6_fjms_project --runInBand",
     "test:ex6:ui": "cross-env HEADLESS=false node --experimental-vm-modules node_modules/jest/bin/jest.js exercise6_fjms_project --runInBand",
+    "test:fjms:real": "cross-env HEADLESS=false BASE_URL=http://localhost:5173 node --experimental-vm-modules node_modules/jest/bin/jest.js exercise6_fjms_project --runInBand",
     "test:ui": "cross-env HEADLESS=false node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
     "export:excel": "node exercise6_fjms_project/generateExcelReport.js"
   },
