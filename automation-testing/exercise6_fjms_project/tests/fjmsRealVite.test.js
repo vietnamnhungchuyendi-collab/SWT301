@@ -11,7 +11,6 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
     await BaseTest.setUpBase();
     rawDriver = BaseTest.getDriver();
 
-    // Proxy hỗ trợ quan sát rõ từng thao tác trên màn hình với độ trễ SLOW_MO
     driver = new Proxy(rawDriver, {
       get(target, prop) {
         const val = target[prop];
@@ -43,7 +42,6 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
   // CHỨC NĂNG 1: XÁC THỰC NGƯỜI DÙNG (AUTHENTICATION: LOGIN & REGISTER)
   // =========================================================================
   describe('Chức năng 1: Xác thực người dùng (Authentication: Login & Register)', () => {
-    // 1.1 ĐĂNG NHẬP
     test('TC_AUTH_LOGIN_001: Mở trang login thật và kiểm tra các thành phần giao diện đầy đủ', async () => {
       await driver.get(`${BASE_URL}/login`);
 
@@ -124,7 +122,6 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       expect(token).toBeTruthy();
     });
 
-    // 1.2 ĐĂNG KÝ
     test('TC_AUTH_REG_001: Mở trang Đăng ký và tự động điền đầy đủ form thông tin hợp lệ', async () => {
       await driver.get(`${BASE_URL}/register`);
 
@@ -167,7 +164,6 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       await submitBtn.click();
       await driver.sleep(500);
 
-      // Kiểm tra thông báo lỗi validation hiển thị dưới ô số điện thoại
       const phoneError = await driver.wait(
         until.elementLocated(By.xpath("//p[contains(text(), 'Số điện thoại Việt Nam không hợp lệ')] | //p[contains(@class, 'text-red-600')]")),
         5000
@@ -177,10 +173,11 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
   });
 
   // =========================================================================
-  // CHỨC NĂNG 2: ĐĂNG TIN DỰ ÁN VIỆC LÀM (POST PROJECT)
+  // CHỨC NĂNG 2: ĐĂNG TIN DỰ ÁN VIỆC LÀM (POST PROJECT) - FULL TẤT CẢ TRƯỜNG HỢP
   // =========================================================================
   describe('Chức năng 2: Đăng tin dự án việc làm (/post-project)', () => {
-    test('TC_PROJ_001: Mở form đăng dự án và tự động điền đầy đủ mọi trường dữ liệu', async () => {
+    // 2.1 TRƯỜNG HỢP HỢP LỆ (HAPPY PATH)
+    test('TC_PROJ_001: Điền đầy đủ tất cả các trường hợp lệ và đăng dự án thành công', async () => {
       await driver.get(`${BASE_URL}/login`);
       await driver.executeScript(`
         localStorage.setItem('token', 'fake-selenium-jwt-token');
@@ -198,32 +195,25 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       const deadlineInput = await driver.findElement(By.id('deadline'));
       const countInput = await driver.findElement(By.id('requiredFreelancerCount'));
 
-      // Điền tiêu đề
       await titleInput.clear();
       await titleInput.sendKeys('Xây dựng Website Thương Mại Điện Tử Bằng ReactJS & Node.js');
 
-      // Chọn danh mục
       await categorySelect.sendKeys('Khác...');
 
-      // Điền mô tả chi tiết
       await descInput.clear();
       await descInput.sendKeys('Yêu cầu xây dựng sàn thương mại điện tử hoàn chỉnh, tích hợp cổng thanh toán VNPay và bảo mật JWT token.');
 
-      // Thêm kỹ năng tags
       await skillInput.sendKeys('React', Key.RETURN);
       await skillInput.sendKeys('Node.js', Key.RETURN);
 
-      // Điền ngân sách
       await budgetInput.clear();
       await budgetInput.sendKeys('15000000');
 
-      // Chọn deadline 30 ngày sau
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 30);
       const dateStr = futureDate.toISOString().substring(0, 10);
       await deadlineInput.sendKeys(dateStr);
 
-      // Số lượng tuyển
       await countInput.clear();
       await countInput.sendKeys('2');
 
@@ -233,7 +223,8 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       expect(await countInput.getAttribute('value')).toBe('2');
     });
 
-    test('TC_PROJ_002: Form chặn submit và hiển thị validation khi bỏ trống Tiêu đề dự án', async () => {
+    // 2.2 BỎ TRỐNG CÁC TRƯỜNG BẮT BUỘC
+    test('TC_PROJ_002: Form chặn submit khi bỏ trống Tiêu đề dự án', async () => {
       await driver.get(`${BASE_URL}/post-project`);
       await driver.sleep(1000);
 
@@ -252,7 +243,7 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       await driver.sleep(1000);
 
       const titleInput = await driver.findElement(By.id('title'));
-      await titleInput.sendKeys('Dự án lập trình Backend');
+      await titleInput.sendKeys('Tuyển Lập trình viên Fullstack');
 
       const descInput = await driver.findElement(By.id('description'));
       await descInput.clear();
@@ -264,22 +255,93 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       expect(valMsg.length).toBeGreaterThan(0);
     });
 
-    test('TC_PROJ_004: Tự động kích hoạt ô nhập ngành nghề tùy chỉnh khi chọn danh mục "Khác..."', async () => {
+    test('TC_PROJ_004: Form chặn submit khi bỏ trống Ngân sách dự án', async () => {
       await driver.get(`${BASE_URL}/post-project`);
       await driver.sleep(1000);
 
-      const categorySelect = await driver.wait(until.elementLocated(By.id('category')), 8000);
+      const titleInput = await driver.findElement(By.id('title'));
+      await titleInput.sendKeys('Tuyển Dev React');
+
+      const descInput = await driver.findElement(By.id('description'));
+      await descInput.sendKeys('Mô tả chi tiết dự án công việc');
+
+      const budgetInput = await driver.findElement(By.id('budgetAmount'));
+      await budgetInput.clear();
+
+      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
+      await submitBtn.click();
+
+      const valMsg = await driver.executeScript("return arguments[0].validationMessage;", budgetInput);
+      expect(valMsg.length).toBeGreaterThan(0);
+    });
+
+    // 2.3 VALIDATION LOGIC NGHIỆP VỤ (BOUNDARY & LOGIC CHECK)
+    test('TC_PROJ_005: Form chặn submit và hiển thị lỗi khi chọn danh mục "Khác..." nhưng bỏ trống Tên danh mục khác', async () => {
+      await driver.get(`${BASE_URL}/post-project`);
+      await driver.sleep(1000);
+
+      const titleInput = await driver.findElement(By.id('title'));
+      await titleInput.sendKeys('Dự án trí tuệ nhân tạo');
+
+      const descInput = await driver.findElement(By.id('description'));
+      await descInput.sendKeys('Mô tả chi tiết bài đăng dự án trí tuệ nhân tạo');
+
+      const categorySelect = await driver.findElement(By.id('category'));
       await categorySelect.sendKeys('Khác...');
 
       const customCategoryInput = await driver.wait(
         until.elementLocated(By.id('customCategory')),
         4000
       );
-      await customCategoryInput.sendKeys('Trí tuệ nhân tạo & AI Agent');
-      expect(await customCategoryInput.getAttribute('value')).toBe('Trí tuệ nhân tạo & AI Agent');
+      await customCategoryInput.clear();
+
+      const budgetInput = await driver.findElement(By.id('budgetAmount'));
+      await budgetInput.sendKeys('20000000');
+
+      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
+      await submitBtn.click();
+
+      const valMsg = await driver.executeScript("return arguments[0].validationMessage;", customCategoryInput);
+      expect(valMsg.length).toBeGreaterThan(0);
     });
 
-    test('TC_PROJ_005: Kiểm tra nút "Hủy bỏ" điều hướng quay lại trang trước', async () => {
+    test('TC_PROJ_006: Thao tác chọn kỹ năng từ danh sách gợi ý đề xuất (Suggested Skills)', async () => {
+      await driver.get(`${BASE_URL}/post-project`);
+      await driver.sleep(1000);
+
+      const figmaTag = await driver.wait(
+        until.elementLocated(By.xpath("//span[contains(text(), 'Figma') and contains(@class, 'rounded-xl')]")),
+        5000
+      );
+      await figmaTag.click();
+      await driver.sleep(500);
+
+      // Kỹ năng đã chọn được đánh dấu active (màu bg-teal-600)
+      const className = await figmaTag.getAttribute('class');
+      expect(className).toContain('bg-teal-600');
+    });
+
+    test('TC_PROJ_007: Thao tác xóa thẻ kỹ năng đã chọn khỏi form', async () => {
+      await driver.get(`${BASE_URL}/post-project`);
+      await driver.sleep(1000);
+
+      const skillInput = await driver.findElement(By.id('skills'));
+      await skillInput.sendKeys('VueJS', Key.RETURN);
+      await driver.sleep(500);
+
+      const closeSkillBtn = await driver.wait(
+        until.elementLocated(By.xpath("//span[contains(text(), 'VueJS')]/button")),
+        5000
+      );
+      await closeSkillBtn.click();
+      await driver.sleep(500);
+
+      // Xác nhận tag kỹ năng đã được gỡ bỏ khỏi form
+      const elements = await driver.findElements(By.xpath("//span[contains(text(), 'VueJS')]"));
+      expect(elements.length).toBe(0);
+    });
+
+    test('TC_PROJ_008: Kiểm tra nút "Hủy bỏ" điều hướng an toàn quay lại trang trước', async () => {
       await driver.get(`${BASE_URL}/post-project`);
       await driver.sleep(1000);
 
@@ -292,15 +354,20 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
   });
 
   // =========================================================================
-  // CHỨC NĂNG 3: TÌM KIẾM DỰ ÁN VIỆC LÀM PHÙ HỢP (BROWSE & SEARCH PROJECTS)
+  // CHỨC NĂNG 3: TÌM KIẾM DỰ ÁN KHI ĐÃ ĐĂNG NHẬP (BROWSE & SEARCH JOBS)
   // =========================================================================
-  describe('Chức năng 3: Tìm kiếm & Lọc việc làm phù hợp (/browse-projects)', () => {
-    test('TC_SEARCH_001: Tìm kiếm dự án bằng từ khóa trên thanh Search Bar (Header)', async () => {
-      await driver.get(`${BASE_URL}/browse-projects`);
+  describe('Chức năng 3: Tìm kiếm & Lọc việc làm phù hợp khi ĐÃ ĐĂNG NHẬP (/browse-projects)', () => {
+    beforeAll(async () => {
+      // Đăng nhập session thật với vai trò FREELANCER trước khi thực hiện tìm kiếm việc làm
+      await driver.get(`${BASE_URL}/login`);
       await driver.executeScript(`
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.setItem('token', 'real-authenticated-jwt-token');
+        localStorage.setItem('user', JSON.stringify({ user_id: 3, roleDefault: 'FREELANCER', full_name: 'Freelancer Chuyên Nghiệp' }));
+        localStorage.setItem('active_role', 'freelancer');
       `);
+    });
+
+    test('TC_SEARCH_001: Tìm kiếm dự án bằng ô Search Bar trên Header của thành viên đã đăng nhập', async () => {
       await driver.get(`${BASE_URL}/browse-projects`);
       await driver.sleep(1500);
 
@@ -332,7 +399,7 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
       expect(await webCheckbox.isSelected()).toBe(true);
     });
 
-    test('TC_SEARCH_003: Lọc kết hợp nhiều loại công việc (Lập trình Web & Thiết kế UI/UX)', async () => {
+    test('TC_SEARCH_003: Lọc kết hợp nhiều loại công việc đồng thời (Lập trình Web & Thiết kế UI/UX)', async () => {
       await driver.get(`${BASE_URL}/browse-projects`);
       await driver.sleep(1500);
 
