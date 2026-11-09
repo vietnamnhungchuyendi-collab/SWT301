@@ -18,3 +18,4 @@ export function readCsvFile(filePath, numLinesToSkip = 1) {
     return line.split(',').map(val => (val !== undefined && val !== null ? val.trim() : ''));
   });
 }
+

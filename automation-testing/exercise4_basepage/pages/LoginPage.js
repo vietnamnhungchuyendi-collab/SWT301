@@ -40,3 +40,4 @@ export class LoginPage extends BasePage {
     return await this.getText(locator);
   }
 }
+

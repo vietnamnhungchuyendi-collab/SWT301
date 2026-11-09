@@ -68,3 +68,4 @@ export class FjmsRegisterPage extends BasePage {
     return await this.driver.executeScript("return arguments[0].validationMessage;", elem);
   }
 }
+

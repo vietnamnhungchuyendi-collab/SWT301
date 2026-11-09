@@ -115,3 +115,4 @@ File Excel sẽ được tạo tại:
 
 ### 4. Tích hợp CI/CD GitHub Actions:
 Workflow đã được cấu hình tại `.github/workflows/fjms-selenium-ci.yml`, tự động chạy toàn bộ các bài test trên Ubuntu GitHub Actions và upload file System Test Excel làm artifact báo cáo.
+

@@ -78,3 +78,4 @@ export class PracticeFormPage extends BasePage {
     return await this.getText(this.modalTitle);
   }
 }
+

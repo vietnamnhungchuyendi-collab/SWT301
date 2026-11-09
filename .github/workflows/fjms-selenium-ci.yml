@@ -59,3 +59,4 @@ jobs:
           path: |
             automation-testing/exercise6_fjms_project/reports/
             docs/System_Test_Report_FJMS.xlsx
+

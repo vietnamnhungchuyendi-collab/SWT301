@@ -50,3 +50,4 @@ export class LoginPage {
     return this.errorMsg;
   }
 }
+

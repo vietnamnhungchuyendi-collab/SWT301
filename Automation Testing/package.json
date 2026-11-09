@@ -1,0 +1,18 @@
+{
+  "name": "automation-testing-submission",
+  "version": "1.0.0",
+  "description": "Automation Testing Submission - Exercise 5 & Exercise 6",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "test:ex5": "node --experimental-vm-modules node_modules/jest/bin/jest.js \"Exercise 5\" --runInBand",
+    "test:ex6": "node --experimental-vm-modules node_modules/jest/bin/jest.js \"Exercise 6\" --runInBand"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.27.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

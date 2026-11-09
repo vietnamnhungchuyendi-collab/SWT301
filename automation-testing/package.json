@@ -14,6 +14,7 @@
     "export:excel": "node exercise6_fjms_project/generateExcelReport.js"
   },
   "dependencies": {
+    "docx": "^9.15.3",
     "selenium-webdriver": "^4.27.0",
     "xlsx": "^0.18.5"
   },
