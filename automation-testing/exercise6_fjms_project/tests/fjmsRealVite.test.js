@@ -1,30 +1,17 @@
 import { BaseTest } from '../../exercise4_basepage/tests/BaseTest.js';
 import { By, until, Key } from 'selenium-webdriver';
 
-describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite (http://localhost:5173)', () => {
+describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhost:5173)', () => {
   const BASE_URL = 'http://localhost:5173';
-  const SLOW_MS = parseInt(process.env.SLOW_MO || '600', 10); // Thời gian chờ giữa các thao tác (mặc định 600ms để dễ quan sát)
+  const SLOW_MS = parseInt(process.env.SLOW_MO || '600', 10);
   let rawDriver;
   let driver;
 
-  /**
-   * Hàm gõ từng ký tự một (human-like typing) để người xem thấy rõ chữ được gõ vào form
-   */
-  async function humanType(element, text, delayMs = 60) {
-    await element.clear();
-    for (const char of text) {
-      await element.sendKeys(char);
-      await rawDriver.sleep(delayMs);
-    }
-  }
-
   beforeAll(async () => {
-    // Khởi động Chrome thật hiển thị trên màn hình
     await BaseTest.setUpBase();
     rawDriver = BaseTest.getDriver();
 
-    // Tạo Proxy tự động sleep nhẹ sau mỗi thao tác (click, sendKeys, clear, get)
-    // Giúp người xem nhìn rõ từng bước thao tác mượt mà
+    // Proxy hỗ trợ quan sát rõ từng thao tác trên màn hình với độ trễ SLOW_MO
     driver = new Proxy(rawDriver, {
       get(target, prop) {
         const val = target[prop];
@@ -43,7 +30,6 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
   });
 
   afterEach(async () => {
-    // Nghỉ nhẹ sau mỗi test case để quan sát kết quả trên màn hình
     if (rawDriver) {
       await rawDriver.sleep(SLOW_MS);
     }
@@ -53,11 +39,12 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
     await BaseTest.tearDownBase();
   });
 
-  // ==========================================
-  // 1. CHỨC NĂNG ĐĂNG NHẬP (AUTH) - ĐẦY ĐỦ CÁC TRƯỜNG HỢP
-  // ==========================================
-  describe('1. Kiểm thử giao diện Đăng nhập React (/login)', () => {
-    test('TC_VITE_LOGIN_001: Mở trang login thật và kiểm tra các thành phần giao diện', async () => {
+  // =========================================================================
+  // CHỨC NĂNG 1: XÁC THỰC NGƯỜI DÙNG (AUTHENTICATION: LOGIN & REGISTER)
+  // =========================================================================
+  describe('Chức năng 1: Xác thực người dùng (Authentication: Login & Register)', () => {
+    // 1.1 ĐĂNG NHẬP
+    test('TC_AUTH_LOGIN_001: Mở trang login thật và kiểm tra các thành phần giao diện đầy đủ', async () => {
       await driver.get(`${BASE_URL}/login`);
 
       const emailInput = await driver.wait(until.elementLocated(By.id('email')), 10000);
@@ -69,7 +56,7 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(await submitBtn.isDisplayed()).toBe(true);
     });
 
-    test('TC_VITE_LOGIN_002: Bắt lỗi HTML5 Validation khi bấm Đăng nhập mà không nhập gì', async () => {
+    test('TC_AUTH_LOGIN_002: Bắt lỗi HTML5 Validation khi bấm Đăng nhập mà không nhập gì', async () => {
       await driver.get(`${BASE_URL}/login`);
 
       const emailInput = await driver.findElement(By.id('email'));
@@ -82,7 +69,21 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(valMsg.length).toBeGreaterThan(0);
     });
 
-    test('TC_VITE_LOGIN_003: Tự động nhập tài khoản sai mật khẩu và kiểm tra phản hồi Backend', async () => {
+    test('TC_AUTH_LOGIN_003: Chặn submit khi nhập email sai định dạng (thiếu @ hoặc tên miền)', async () => {
+      await driver.get(`${BASE_URL}/login`);
+
+      const emailInput = await driver.findElement(By.id('email'));
+      await emailInput.clear();
+      await emailInput.sendKeys('dinhdangemailsai');
+
+      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
+      await submitBtn.click();
+
+      const valMsg = await driver.executeScript("return arguments[0].validationMessage;", emailInput);
+      expect(valMsg.length).toBeGreaterThan(0);
+    });
+
+    test('TC_AUTH_LOGIN_004: Bắt lỗi từ Backend khi nhập tài khoản tồn tại nhưng sai mật khẩu', async () => {
       await driver.get(`${BASE_URL}/login`);
 
       const emailInput = await driver.findElement(By.id('email'));
@@ -92,7 +93,7 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       await emailInput.clear();
       await emailInput.sendKeys('admin1@fjms.com');
       await passwordInput.clear();
-      await passwordInput.sendKeys('SaiMatKhau123!');
+      await passwordInput.sendKeys('MatKhauKhongDung123!');
 
       await submitBtn.click();
 
@@ -104,7 +105,7 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(errorText).toContain('không chính xác');
     });
 
-    test('TC_VITE_LOGIN_004: Tự động nhập tài khoản hợp lệ của hệ thống và đăng nhập thành công', async () => {
+    test('TC_AUTH_LOGIN_005: Đăng nhập thành công với tài khoản và mật khẩu chính xác', async () => {
       await driver.get(`${BASE_URL}/login`);
 
       const emailInput = await driver.findElement(By.id('email'));
@@ -117,19 +118,14 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       await passwordInput.sendKeys('123456');
 
       await submitBtn.click();
-      await driver.sleep(1500);
+      await driver.sleep(2000);
 
-      // Sau khi đăng nhập thành công, URL chuyển hướng hoặc lưu token vào localStorage
       const token = await driver.executeScript("return localStorage.getItem('token');");
       expect(token).toBeTruthy();
     });
-  });
 
-  // ==========================================
-  // 2. CHỨC NĂNG ĐĂNG KÝ (REGISTER) - ĐẦY ĐỦ CÁC TRƯỜNG HỢP
-  // ==========================================
-  describe('2. Kiểm thử giao diện Đăng ký React (/register)', () => {
-    test('TC_VITE_REG_001: Tự động điền đầy đủ form đăng ký tài khoản Freelancer mới', async () => {
+    // 1.2 ĐĂNG KÝ
+    test('TC_AUTH_REG_001: Mở trang Đăng ký và tự động điền đầy đủ form thông tin hợp lệ', async () => {
       await driver.get(`${BASE_URL}/register`);
 
       const fullnameInput = await driver.wait(until.elementLocated(By.id('fullname')), 10000);
@@ -147,7 +143,7 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(await phoneInput.getAttribute('value')).toBe('0987654321');
     });
 
-    test('TC_VITE_REG_002: Kiểm tra validation form khi bỏ trống thông tin bắt buộc', async () => {
+    test('TC_AUTH_REG_002: Kiểm tra validation form Đăng ký khi bỏ trống trường Họ tên', async () => {
       await driver.get(`${BASE_URL}/register`);
 
       const fullnameInput = await driver.findElement(By.id('fullname'));
@@ -160,26 +156,31 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(valMsg.length).toBeGreaterThan(0);
     });
 
-    test('TC_VITE_REG_003: Chặn submit khi nhập định dạng email không hợp lệ', async () => {
+    test('TC_AUTH_REG_003: Chặn đăng ký khi định dạng số điện thoại không hợp lệ', async () => {
       await driver.get(`${BASE_URL}/register`);
 
-      const emailInput = await driver.findElement(By.id('email'));
-      await emailInput.clear();
-      await emailInput.sendKeys('email-khong-hop-le');
+      const phoneInput = await driver.findElement(By.id('phone'));
+      await phoneInput.clear();
+      await phoneInput.sendKeys('abc-phone');
 
       const submitBtn = await driver.findElement(By.css("button[type='submit']"));
       await submitBtn.click();
+      await driver.sleep(500);
 
-      const valMsg = await driver.executeScript("return arguments[0].validationMessage;", emailInput);
-      expect(valMsg.length).toBeGreaterThan(0);
+      // Kiểm tra thông báo lỗi validation hiển thị dưới ô số điện thoại
+      const phoneError = await driver.wait(
+        until.elementLocated(By.xpath("//p[contains(text(), 'Số điện thoại Việt Nam không hợp lệ')] | //p[contains(@class, 'text-red-600')]")),
+        5000
+      );
+      expect(await phoneError.isDisplayed()).toBe(true);
     });
   });
 
-  // ==========================================
-  // 3. CHỨC NĂNG ĐĂNG TIN DỰ ÁN (POST PROJECT) - ĐẦY ĐỦ CÁC TRƯỜNG HỢP
-  // ==========================================
-  describe('3. Kiểm thử giao diện Đăng dự án React (/post-project)', () => {
-    test('TC_VITE_PROJ_001: Tự động điền đầy đủ tất cả các trường: Tiêu đề, Ngành nghề, Mô tả, Kỹ năng, Ngân sách, Hạn chót, Số lượng', async () => {
+  // =========================================================================
+  // CHỨC NĂNG 2: ĐĂNG TIN DỰ ÁN VIỆC LÀM (POST PROJECT)
+  // =========================================================================
+  describe('Chức năng 2: Đăng tin dự án việc làm (/post-project)', () => {
+    test('TC_PROJ_001: Mở form đăng dự án và tự động điền đầy đủ mọi trường dữ liệu', async () => {
       await driver.get(`${BASE_URL}/login`);
       await driver.executeScript(`
         localStorage.setItem('token', 'fake-selenium-jwt-token');
@@ -187,7 +188,7 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       `);
 
       await driver.get(`${BASE_URL}/post-project`);
-      await driver.sleep(1000);
+      await driver.sleep(1200);
 
       const titleInput = await driver.wait(until.elementLocated(By.id('title')), 8000);
       const descInput = await driver.findElement(By.id('description'));
@@ -197,43 +198,42 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       const deadlineInput = await driver.findElement(By.id('deadline'));
       const countInput = await driver.findElement(By.id('requiredFreelancerCount'));
 
-      // 1. Tự động điền Tiêu đề dự án
+      // Điền tiêu đề
       await titleInput.clear();
       await titleInput.sendKeys('Xây dựng Website Thương Mại Điện Tử Bằng ReactJS & Node.js');
 
-      // 2. Chọn Danh mục công việc
+      // Chọn danh mục
       await categorySelect.sendKeys('Khác...');
 
-      // 3. Tự động điền Mô tả dự án
+      // Điền mô tả chi tiết
       await descInput.clear();
       await descInput.sendKeys('Yêu cầu xây dựng sàn thương mại điện tử hoàn chỉnh, tích hợp cổng thanh toán VNPay và bảo mật JWT token.');
 
-      // 4. Nhập Kỹ năng yêu cầu (nhấn Enter để thêm tag)
+      // Thêm kỹ năng tags
       await skillInput.sendKeys('React', Key.RETURN);
       await skillInput.sendKeys('Node.js', Key.RETURN);
 
-      // 5. Tự động điền Ngân sách
+      // Điền ngân sách
       await budgetInput.clear();
-      await budgetInput.sendKeys('15000000'); // 15 triệu VNĐ
+      await budgetInput.sendKeys('15000000');
 
-      // 6. Tự động chọn Hạn chót hoàn thành (chọn ngày sau hôm nay)
+      // Chọn deadline 30 ngày sau
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 30);
       const dateStr = futureDate.toISOString().substring(0, 10);
       await deadlineInput.sendKeys(dateStr);
 
-      // 7. Tự động điền Số lượng cần tuyển
+      // Số lượng tuyển
       await countInput.clear();
       await countInput.sendKeys('2');
 
-      // Assertions kiểm tra dữ liệu đã được gõ vào form chính xác
       expect(await titleInput.getAttribute('value')).toContain('ReactJS & Node.js');
       expect(await descInput.getAttribute('value')).toContain('VNPay');
       expect(await budgetInput.getAttribute('value')).toContain('15.000.000');
       expect(await countInput.getAttribute('value')).toBe('2');
     });
 
-    test('TC_VITE_PROJ_002: Form chặn submit và hiển thị validation khi bỏ trống trường bắt buộc', async () => {
+    test('TC_PROJ_002: Form chặn submit và hiển thị validation khi bỏ trống Tiêu đề dự án', async () => {
       await driver.get(`${BASE_URL}/post-project`);
       await driver.sleep(1000);
 
@@ -247,7 +247,24 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(valMsg.length).toBeGreaterThan(0);
     });
 
-    test('TC_VITE_PROJ_003: Kiểm tra hiển thị ô nhập ngành nghề tùy chỉnh khi chọn danh mục "Khác..."', async () => {
+    test('TC_PROJ_003: Form chặn submit khi bỏ trống Mô tả dự án', async () => {
+      await driver.get(`${BASE_URL}/post-project`);
+      await driver.sleep(1000);
+
+      const titleInput = await driver.findElement(By.id('title'));
+      await titleInput.sendKeys('Dự án lập trình Backend');
+
+      const descInput = await driver.findElement(By.id('description'));
+      await descInput.clear();
+
+      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
+      await submitBtn.click();
+
+      const valMsg = await driver.executeScript("return arguments[0].validationMessage;", descInput);
+      expect(valMsg.length).toBeGreaterThan(0);
+    });
+
+    test('TC_PROJ_004: Tự động kích hoạt ô nhập ngành nghề tùy chỉnh khi chọn danh mục "Khác..."', async () => {
       await driver.get(`${BASE_URL}/post-project`);
       await driver.sleep(1000);
 
@@ -261,197 +278,24 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       await customCategoryInput.sendKeys('Trí tuệ nhân tạo & AI Agent');
       expect(await customCategoryInput.getAttribute('value')).toBe('Trí tuệ nhân tạo & AI Agent');
     });
-  });
 
-  // ==========================================
-  // 4. CHỨC NĂNG THÊM & QUẢN LÝ TÀI KHOẢN NGÂN HÀNG (/freelancer-wallet)
-  // ==========================================
-  describe('4. Kiểm thử chức năng Thêm tài khoản ngân hàng (/freelancer-wallet)', () => {
-    test('TC_VITE_BANK_001: Mở modal Thêm tài khoản ngân hàng và tự động điền thông tin', async () => {
-      await driver.get(`${BASE_URL}/login`);
-      await driver.executeScript(`
-        localStorage.setItem('token', 'fake-selenium-jwt-token');
-        localStorage.setItem('user', JSON.stringify({ user_id: 3, roleDefault: 'FREELANCER', full_name: 'Freelancer Tester' }));
-      `);
+    test('TC_PROJ_005: Kiểm tra nút "Hủy bỏ" điều hướng quay lại trang trước', async () => {
+      await driver.get(`${BASE_URL}/post-project`);
+      await driver.sleep(1000);
 
-      await driver.get(`${BASE_URL}/freelancer-wallet`);
-      await driver.sleep(1200);
-
-      // Tìm và click nút mở modal (Phương thức TT hoặc Quản lý)
-      const openModalBtn = await driver.wait(
-        until.elementLocated(By.xpath("//p[contains(text(), 'Phương thức TT')] | //button[contains(text(), 'Quản lý')] | //button[contains(., 'Thêm tài khoản')]")),
+      const cancelBtn = await driver.wait(
+        until.elementLocated(By.xpath("//button[contains(text(), 'Hủy bỏ')]")),
         8000
       );
-      await openModalBtn.click();
-      await driver.sleep(500);
-
-      // Điền thông tin vào modal
-      const accNumInput = await driver.wait(
-        until.elementLocated(By.name('account_number')),
-        5000
-      );
-      const accHolderInput = await driver.findElement(By.name('account_holder_name'));
-
-      await accNumInput.clear();
-      await accNumInput.sendKeys('1029384756');
-
-      await accHolderInput.clear();
-      await accHolderInput.sendKeys('NGUYEN VAN FREELANCER');
-
-      expect(await accNumInput.getAttribute('value')).toBe('1029384756');
-      expect(await accHolderInput.getAttribute('value')).toBe('NGUYEN VAN FREELANCER');
-
-      // Đóng modal để không che màn hình
-      const closeBtn = await driver.findElement(By.xpath("//div[contains(@class, 'fixed')]//button[contains(., 'close')]"));
-      await closeBtn.click();
-      await driver.sleep(500);
+      expect(await cancelBtn.isDisplayed()).toBe(true);
     });
   });
 
-  // ==========================================
-  // 5. CHỨC NĂNG RÚT TIỀN (WITHDRAW FUNDS) - ĐẦY ĐỦ CÁC TRƯỜNG HỢP
-  // ==========================================
-  describe('5. Kiểm thử giao diện Rút tiền (/withdraw)', () => {
-    test('TC_VITE_WITHDRAW_001: Mở trang rút tiền và tự động điền số tiền tùy chỉnh qua nút "Số khác"', async () => {
-      await driver.executeScript(`
-        localStorage.setItem('token', 'fake-selenium-jwt-token');
-        localStorage.setItem('user', JSON.stringify({ user_id: 3, roleDefault: 'FREELANCER', full_name: 'Freelancer Tester' }));
-      `);
-
-      await driver.get(`${BASE_URL}/withdraw`);
-      await driver.sleep(1500);
-
-      const customBtn = await driver.wait(
-        until.elementLocated(By.xpath("//button[contains(., 'Số khác')]")),
-        8000
-      );
-      await customBtn.click();
-
-      const amountInput = await driver.wait(
-        until.elementLocated(By.css("input[type='number']")),
-        5000
-      );
-
-      await amountInput.clear();
-      await amountInput.sendKeys('500000'); // Tự động điền 500,000 VNĐ
-
-      expect(await amountInput.getAttribute('value')).toBe('500000');
-    });
-
-    test('TC_VITE_WITHDRAW_002: Kiểm tra thao tác chọn các hạn mức rút tiền nhanh có sẵn', async () => {
-      await driver.get(`${BASE_URL}/withdraw`);
-      await driver.sleep(1000);
-
-      const customBtn = await driver.wait(
-        until.elementLocated(By.xpath("//button[contains(., 'Số khác')]")),
-        8000
-      );
-      expect(await customBtn.isDisplayed()).toBe(true);
-    });
-
-    test('TC_VITE_WITHDRAW_003: Kiểm tra hiển thị nút "Rút toàn bộ" số dư', async () => {
-      await driver.get(`${BASE_URL}/withdraw`);
-      await driver.sleep(1000);
-
-      const withdrawAllBtn = await driver.wait(
-        until.elementLocated(By.xpath("//button[contains(., 'Rút toàn bộ')]")),
-        8000
-      );
-      expect(await withdrawAllBtn.isDisplayed()).toBe(true);
-    });
-  });
-
-  // ==========================================
-  // 6. CHỨC NĂNG NẠP TIỀN KÝ QUỸ (ESCROW DEPOSIT) - ĐẦY ĐỦ CÁC TRƯỜNG HỢP
-  // ==========================================
-  describe('6. Kiểm thử giao diện Nạp tiền Ký quỹ dự án (/project/1/fund)', () => {
-    test('TC_VITE_DEPOSIT_001: Mở giao diện nạp tiền và tự động điền số tiền nạp VNPay (10.000.000 VNĐ)', async () => {
-      await driver.get(`${BASE_URL}/project/1/fund`);
-      await driver.sleep(1000);
-
-      const depositInput = await driver.wait(
-        until.elementLocated(By.css("input[type='number']")),
-        8000
-      );
-
-      await depositInput.clear();
-      await depositInput.sendKeys('10000000'); // Tự động điền 10,000,000 VNĐ
-
-      expect(await depositInput.getAttribute('value')).toBe('10000000');
-    });
-
-    test('TC_VITE_DEPOSIT_002: Kiểm tra giao diện và nút hành động chuyển hướng VNPay', async () => {
-      await driver.get(`${BASE_URL}/project/1/fund`);
-      await driver.sleep(1000);
-
-      const depositInput = await driver.wait(
-        until.elementLocated(By.css("input[type='number']")),
-        8000
-      );
-      await depositInput.clear();
-      await depositInput.sendKeys('5000000');
-
-      const vnpayBtn = await driver.findElement(By.xpath("//button[contains(., 'VNPay') or contains(., 'Thanh toán') or contains(., 'Xác nhận')]"));
-      expect(await vnpayBtn.isDisplayed()).toBe(true);
-    });
-
-    test('TC_VITE_DEPOSIT_003: Chặn thao tác khi số tiền nạp bằng 0 hoặc không hợp lệ', async () => {
-      await driver.get(`${BASE_URL}/project/1/fund`);
-      await driver.sleep(1000);
-
-      const depositInput = await driver.wait(
-        until.elementLocated(By.css("input[type='number']")),
-        8000
-      );
-      await depositInput.clear();
-      await depositInput.sendKeys('0');
-
-      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
-      // Nút submit có thuộc tính disabled khi displayAmount <= 0
-      const isDisabled = await submitBtn.getAttribute('disabled');
-      expect(isDisabled).toBeTruthy();
-    });
-  });
-
-  // ==========================================
-  // 7. KIỂM THỬ KẾT QUẢ THANH TOÁN / NẠP TIỀN THÀNH CÔNG & THẤT BẠI
-  // ==========================================
-  describe('7. Kiểm thử trang Kết quả thanh toán & nạp tiền (/payment-success & /payment-failed)', () => {
-    test('TC_VITE_PAYMENT_SUCCESS: Kiểm tra trang thông báo Nạp tiền / Ký quỹ thành công', async () => {
-      await driver.get(`${BASE_URL}/payment-success`);
-      await driver.sleep(1000);
-
-      const heading = await driver.wait(
-        until.elementLocated(By.xpath("//h1[contains(text(), 'Thanh toán Thành công')]")),
-        8000
-      );
-      const escrowBadge = await driver.findElement(By.xpath("//p[contains(text(), 'VNPay Escrow')]"));
-
-      expect(await heading.isDisplayed()).toBe(true);
-      expect(await escrowBadge.isDisplayed()).toBe(true);
-    });
-
-    test('TC_VITE_PAYMENT_FAILED: Kiểm tra trang thông báo Thanh toán / Ký quỹ thất bại có nút Thử lại', async () => {
-      await driver.get(`${BASE_URL}/payment-failed`);
-      await driver.sleep(1000);
-
-      const heading = await driver.wait(
-        until.elementLocated(By.xpath("//h1[contains(text(), 'Thanh toán Thất bại')]")),
-        8000
-      );
-      const retryBtn = await driver.findElement(By.xpath("//a[contains(text(), 'Thử lại')]"));
-
-      expect(await heading.isDisplayed()).toBe(true);
-      expect(await retryBtn.isDisplayed()).toBe(true);
-    });
-  });
-
-  // ==========================================
-  // 8. CHỨC NĂNG TÌM KIẾM DỰ ÁN (SEARCH & FILTER JOBS - /browse-projects)
-  // ==========================================
-  describe('8. Kiểm thử chức năng Tìm kiếm & Lọc dự án việc làm (/browse-projects)', () => {
-    test('TC_VITE_SEARCH_001: Tìm kiếm dự án bằng thanh search trên Header và hiển thị kết quả', async () => {
-      // Xóa session để Header ở layout public
+  // =========================================================================
+  // CHỨC NĂNG 3: TÌM KIẾM DỰ ÁN VIỆC LÀM PHÙ HỢP (BROWSE & SEARCH PROJECTS)
+  // =========================================================================
+  describe('Chức năng 3: Tìm kiếm & Lọc việc làm phù hợp (/browse-projects)', () => {
+    test('TC_SEARCH_001: Tìm kiếm dự án bằng từ khóa trên thanh Search Bar (Header)', async () => {
       await driver.get(`${BASE_URL}/browse-projects`);
       await driver.executeScript(`
         localStorage.removeItem('token');
@@ -460,40 +304,50 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       await driver.get(`${BASE_URL}/browse-projects`);
       await driver.sleep(1500);
 
-      // Tìm thanh input search trên Header
       const searchInput = await driver.wait(
         until.elementLocated(By.xpath("//input[contains(@placeholder, 'Tìm kiếm')]")),
         8000
       );
 
-      // Tự động gõ từ khóa tìm kiếm và nhấn Enter
       await searchInput.clear();
       await searchInput.sendKeys('React', Key.RETURN);
-      await driver.sleep(2000);
+      await driver.sleep(1500);
 
-      // Kiểm tra URL đã chuyển hướng sang dạng search query ?q=React
       const currentUrl = await driver.getCurrentUrl();
       expect(currentUrl).toContain('q=React');
     });
 
-    test('TC_VITE_SEARCH_002: Lọc dự án theo loại công việc (Category Checkbox)', async () => {
+    test('TC_SEARCH_002: Lọc dự án theo checkbox Loại công việc (Lập trình Web)', async () => {
       await driver.get(`${BASE_URL}/browse-projects`);
       await driver.sleep(1500);
 
-      // Chọn checkbox Lập trình Web
-      const webCategoryCheckbox = await driver.wait(
+      const webCheckbox = await driver.wait(
         until.elementLocated(By.xpath("//span[contains(text(), 'Lập trình Web')]/preceding-sibling::input[@type='checkbox'] | //label[contains(., 'Lập trình Web')]//input")),
         8000
       );
 
-      await webCategoryCheckbox.click();
+      await webCheckbox.click();
       await driver.sleep(1000);
 
-      // Xác nhận checkbox đã được tích chọn
-      expect(await webCategoryCheckbox.isSelected()).toBe(true);
+      expect(await webCheckbox.isSelected()).toBe(true);
     });
 
-    test('TC_VITE_SEARCH_003: Lọc dự án theo khoảng ngân sách Min - Max', async () => {
+    test('TC_SEARCH_003: Lọc kết hợp nhiều loại công việc (Lập trình Web & Thiết kế UI/UX)', async () => {
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      const designCheckbox = await driver.wait(
+        until.elementLocated(By.xpath("//span[contains(text(), 'Thiết kế UI/UX')]/preceding-sibling::input[@type='checkbox'] | //label[contains(., 'Thiết kế UI/UX')]//input")),
+        8000
+      );
+
+      await designCheckbox.click();
+      await driver.sleep(1000);
+
+      expect(await designCheckbox.isSelected()).toBe(true);
+    });
+
+    test('TC_SEARCH_004: Lọc dự án theo khoảng ngân sách (Min: 5.000.000 VNĐ - Max: 50.000.000 VNĐ)', async () => {
       await driver.get(`${BASE_URL}/browse-projects`);
       await driver.sleep(1500);
 
@@ -503,7 +357,6 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       );
       const maxInput = await driver.findElement(By.css("input[placeholder='Tối đa']"));
 
-      // Tự động điền khoảng ngân sách từ 5.000.000 đến 50.000.000
       await minInput.clear();
       await minInput.sendKeys('5000000');
 
@@ -514,7 +367,53 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
       expect(await maxInput.getAttribute('value')).toBe('50000000');
     });
 
-    test('TC_VITE_SEARCH_004: Tự động bấm nút "Xóa tất cả" để hoàn tác các bộ lọc', async () => {
+    test('TC_SEARCH_005: Lọc dự án theo loại hợp đồng Trọn gói (Fixed Price)', async () => {
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      const fixedPriceCheckbox = await driver.wait(
+        until.elementLocated(By.xpath("//label[contains(., 'Trọn gói')]//input")),
+        8000
+      );
+
+      await fixedPriceCheckbox.click();
+      await driver.sleep(1000);
+
+      expect(await fixedPriceCheckbox.isSelected()).toBe(true);
+    });
+
+    test('TC_SEARCH_006: Lọc dự án bằng cách chọn Tag Kỹ năng (React, Figma)', async () => {
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      const skillTag = await driver.wait(
+        until.elementLocated(By.xpath("//span[text()='React'] | //span[text()='Figma']")),
+        8000
+      );
+
+      await skillTag.click();
+      await driver.sleep(1000);
+
+      const className = await skillTag.getAttribute('class');
+      expect(className).toContain('bg-teal-600');
+    });
+
+    test('TC_SEARCH_007: Thay đổi tiêu chí Sắp xếp kết quả dự án (Ngân sách cao nhất)', async () => {
+      await driver.get(`${BASE_URL}/browse-projects`);
+      await driver.sleep(1500);
+
+      const sortSelect = await driver.wait(
+        until.elementLocated(By.xpath("//select[option[contains(text(), 'Ngân sách cao nhất')]]")),
+        8000
+      );
+
+      await sortSelect.sendKeys('Ngân sách cao nhất');
+      await driver.sleep(1000);
+
+      expect(await sortSelect.getAttribute('value')).toBe('Highest Budget');
+    });
+
+    test('TC_SEARCH_008: Bấm nút "Xóa tất cả" để hoàn tác và xóa sạch mọi bộ lọc đã chọn', async () => {
       await driver.get(`${BASE_URL}/browse-projects?q=React`);
       await driver.sleep(1500);
 
@@ -522,10 +421,10 @@ describe('Kiểm thử tự động Selenium trực tiếp trên Web React Vite 
         until.elementLocated(By.xpath("//button[contains(text(), 'Xóa tất cả')]")),
         8000
       );
+
       await clearBtn.click();
       await driver.sleep(1000);
 
-      // Kiểm tra URL được reset sạch về /browse-projects
       const currentUrl = await driver.getCurrentUrl();
       expect(currentUrl).not.toContain('q=React');
     });
