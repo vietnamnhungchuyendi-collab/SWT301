@@ -395,3 +395,4 @@ Packer.toBuffer(doc).then(buffer => {
   fs.copyFileSync(outputPath, docsOutputPath);
   console.log(`✅ Đã copy ra thư mục docs tại: ${docsOutputPath}`);
 });
+
