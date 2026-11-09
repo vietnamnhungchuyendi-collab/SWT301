@@ -11,9 +11,11 @@ export class DriverFactory {
    * @param {boolean} headless Có chạy ở chế độ headless hay không (mặc định: true cho tự động hoá/CI)
    * @returns {Promise<import('selenium-webdriver').WebDriver>}
    */
-  static async createDriver(headless = true) {
+  static async createDriver(headless = null) {
+    const finalHeadless = process.env.HEADLESS === 'false' ? false : (headless ?? true);
+
     const options = new chrome.Options();
-    if (headless || process.env.CI) {
+    if (finalHeadless || process.env.CI) {
       options.addArguments('--headless=new', '--no-sandbox', '--disable-dev-shm-usage');
     }
     options.addArguments('--window-size=1920,1080');

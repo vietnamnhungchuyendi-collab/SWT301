@@ -11,6 +11,8 @@
     "test:ex4": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise4_basepage --runInBand",
     "test:ex5": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise5_demoqa --runInBand",
     "test:ex6": "node --experimental-vm-modules node_modules/jest/bin/jest.js exercise6_fjms_project --runInBand",
+    "test:ex6:ui": "cross-env HEADLESS=false node --experimental-vm-modules node_modules/jest/bin/jest.js exercise6_fjms_project --runInBand",
+    "test:ui": "cross-env HEADLESS=false node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
     "export:excel": "node exercise6_fjms_project/generateExcelReport.js"
   },
   "dependencies": {
@@ -19,6 +21,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "jest": "^29.7.0"
   }
 }
