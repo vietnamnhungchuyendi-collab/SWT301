@@ -188,7 +188,7 @@ export function startFjmsTestServer(port = 3000) {
         toastDiv.innerHTML = '';
 
         if (email === 'existing@fjms.com') {
-          errDiv.innerHTML = '<div class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl text-xs">Email đã được sử dụng trong hệ thống!</div>';
+          errDiv.innerHTML = '<div class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl text-xs">Email này đã được đăng ký tài khoản!</div>';
           return;
         }
 
