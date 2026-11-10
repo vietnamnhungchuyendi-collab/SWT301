@@ -116,15 +116,20 @@ export const getProjects = async (req, res) => {
     // Fetch skills for each project
     const projects = result.recordset;
     for (let project of projects) {
-      const skillsResult = await pool.request()
-        .input('projectId', sql.Int, project.project_id)
-        .query(`
-          SELECT s.skill_name 
-          FROM project_skills ps
-          JOIN skills s ON ps.skill_id = s.skill_id
-          WHERE ps.project_id = @projectId
-        `);
-      project.skills = skillsResult.recordset.map(r => r.skill_name);
+      const pid = project.project_id != null ? parseInt(project.project_id) : null;
+      if (pid && !isNaN(pid)) {
+        const skillsResult = await pool.request()
+          .input('projectId', sql.Int, pid)
+          .query(`
+            SELECT s.skill_name 
+            FROM project_skills ps
+            JOIN skills s ON ps.skill_id = s.skill_id
+            WHERE ps.project_id = @projectId
+          `);
+        project.skills = skillsResult.recordset.map(r => r.skill_name);
+      } else {
+        project.skills = [];
+      }
     }
 
     res.json({ success: true, projects });
@@ -243,22 +248,28 @@ export const getEmployerProjects = async (req, res) => {
     const projects = result.recordset;
 
     for (let project of projects) {
-      // Fetch skills
-      const skillsResult = await pool.request()
-        .input('projectId', sql.Int, project.project_id)
-        .query(`
-          SELECT s.skill_name 
-          FROM project_skills ps
-          JOIN skills s ON ps.skill_id = s.skill_id
-          WHERE ps.project_id = @projectId
-        `);
-      project.skills = skillsResult.recordset.map(r => r.skill_name);
+      const pid2 = project.project_id != null ? parseInt(project.project_id) : null;
+      if (pid2 && !isNaN(pid2)) {
+        // Fetch skills
+        const skillsResult = await pool.request()
+          .input('projectId', sql.Int, pid2)
+          .query(`
+            SELECT s.skill_name 
+            FROM project_skills ps
+            JOIN skills s ON ps.skill_id = s.skill_id
+            WHERE ps.project_id = @projectId
+          `);
+        project.skills = skillsResult.recordset.map(r => r.skill_name);
 
-      // Count proposals
-      const proposalsResult = await pool.request()
-        .input('projectId', sql.Int, project.project_id)
-        .query(`SELECT COUNT(*) as count FROM proposals WHERE project_id = @projectId`);
-      project.proposalsCount = proposalsResult.recordset[0].count;
+        // Count proposals
+        const proposalsResult = await pool.request()
+          .input('projectId', sql.Int, pid2)
+          .query(`SELECT COUNT(*) as count FROM proposals WHERE project_id = @projectId`);
+        project.proposalsCount = proposalsResult.recordset[0].count;
+      } else {
+        project.skills = [];
+        project.proposalsCount = 0;
+      }
     }
 
     res.json({ success: true, projects });

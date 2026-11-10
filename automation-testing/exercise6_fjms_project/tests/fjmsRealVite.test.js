@@ -176,16 +176,24 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
   // CHỨC NĂNG 2: ĐĂNG TIN DỰ ÁN VIỆC LÀM (POST PROJECT) - FULL TẤT CẢ TRƯỜNG HỢP
   // =========================================================================
   describe('Chức năng 2: Đăng tin dự án việc làm (/post-project)', () => {
+    beforeAll(async () => {
+      // Đăng nhập session thật với tài khoản EMPLOYER để DashboardLayout cho phép truy cập /post-project
+      await driver.get(`${BASE_URL}/login`);
+      const emailInput = await driver.wait(until.elementLocated(By.id('email')), 10000);
+      const passwordInput = await driver.findElement(By.id('password'));
+      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
+      await emailInput.clear();
+      await emailInput.sendKeys('benphilip11234@gmail.com');
+      await passwordInput.clear();
+      await passwordInput.sendKeys('123456');
+      await submitBtn.click();
+      await driver.sleep(2500);
+    });
+
     // 2.1 TRƯỜNG HỢP HỢP LỆ (HAPPY PATH)
     test('TC_PROJ_001: Điền đầy đủ tất cả các trường hợp lệ và đăng dự án thành công', async () => {
-      await driver.get(`${BASE_URL}/login`);
-      await driver.executeScript(`
-        localStorage.setItem('token', 'fake-selenium-jwt-token');
-        localStorage.setItem('user', JSON.stringify({ user_id: 5, roleDefault: 'EMPLOYER', full_name: 'Employer Tester' }));
-      `);
-
       await driver.get(`${BASE_URL}/post-project`);
-      await driver.sleep(1200);
+      await driver.sleep(1500);
 
       const titleInput = await driver.wait(until.elementLocated(By.id('title')), 8000);
       const descInput = await driver.findElement(By.id('description'));
@@ -358,13 +366,17 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
   // =========================================================================
   describe('Chức năng 3: Tìm kiếm & Lọc việc làm phù hợp khi ĐÃ ĐĂNG NHẬP (/browse-projects)', () => {
     beforeAll(async () => {
-      // Đăng nhập session thật với vai trò FREELANCER trước khi thực hiện tìm kiếm việc làm
+      // Đăng nhập session thật trước khi thực hiện tìm kiếm việc làm
       await driver.get(`${BASE_URL}/login`);
-      await driver.executeScript(`
-        localStorage.setItem('token', 'real-authenticated-jwt-token');
-        localStorage.setItem('user', JSON.stringify({ user_id: 3, roleDefault: 'FREELANCER', full_name: 'Freelancer Chuyên Nghiệp' }));
-        localStorage.setItem('active_role', 'freelancer');
-      `);
+      const emailInput = await driver.wait(until.elementLocated(By.id('email')), 10000);
+      const passwordInput = await driver.findElement(By.id('password'));
+      const submitBtn = await driver.findElement(By.css("button[type='submit']"));
+      await emailInput.clear();
+      await emailInput.sendKeys('benphilip11234@gmail.com');
+      await passwordInput.clear();
+      await passwordInput.sendKeys('123456');
+      await submitBtn.click();
+      await driver.sleep(2500);
     });
 
     test('TC_SEARCH_001: Tìm kiếm dự án bằng ô Search Bar trên Header của thành viên đã đăng nhập', async () => {
@@ -373,9 +385,11 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
 
       const searchInput = await driver.wait(
         until.elementLocated(By.xpath("//input[contains(@placeholder, 'Tìm kiếm')]")),
-        8000
+        10000
       );
 
+      await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", searchInput);
+      await driver.sleep(500);
       await searchInput.clear();
       await searchInput.sendKeys('React', Key.RETURN);
       await driver.sleep(1500);
@@ -443,7 +457,9 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
         8000
       );
 
-      await fixedPriceCheckbox.click();
+      await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", fixedPriceCheckbox);
+      await driver.sleep(500);
+      await driver.executeScript("arguments[0].click();", fixedPriceCheckbox);
       await driver.sleep(1000);
 
       expect(await fixedPriceCheckbox.isSelected()).toBe(true);
@@ -458,7 +474,9 @@ describe('Kiểm thử tự động Selenium E2E Web React Vite (http://localhos
         8000
       );
 
-      await skillTag.click();
+      await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", skillTag);
+      await driver.sleep(500);
+      await driver.executeScript("arguments[0].click();", skillTag);
       await driver.sleep(1000);
 
       const className = await skillTag.getAttribute('class');
