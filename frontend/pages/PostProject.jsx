@@ -62,7 +62,7 @@ export default function PostProject() {
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0F766E] font-bold text-sm">VNĐ</span>
-                  <input className="w-full pl-14 pr-4 py-3 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] transition-all text-base text-[#0F766E]" placeholder="Ví dụ: 10.000.000" type="text"/>
+                  <input id="budgetAmount" className="w-full pl-14 pr-4 py-3 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] transition-all text-base text-[#0F766E]" placeholder="Ví dụ: 10.000.000" type="text"/>
                 </div>
               </div>
               {/*  Deadline  */}
